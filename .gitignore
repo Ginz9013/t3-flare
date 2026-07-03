@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# builds
+.next/
+.open-next/
+out/
+dist/
+
+# cloudflare / wrangler
+.wrangler/
+.dev.vars
+
+# env & secrets
+.env
+.env*.local
+ADMIN.md
+
+# prisma local db
+*.sqlite
+*.sqlite-journal
+
+# os / editor
+.DS_Store
+*.log
+
+# scaffold metadata (kept in generated projects, not here)
