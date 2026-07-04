@@ -4,7 +4,7 @@
 		"name": "kouhei"
 	},
 	"description": "t3-flare — The T3 Stack on Cloudflare。含 site-butler 網站管家 skill。",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"plugins": [
 		{
 			"name": "site-butler",
