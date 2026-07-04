@@ -1,6 +1,6 @@
 {
 	"name": "site-butler",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "全程網站管家 — 從零建立並部署一個 Cloudflare 網站(後台/資料庫/圖片上傳),雲端操作全由 AI 代操。",
 	"author": {
 		"name": "kouhei"

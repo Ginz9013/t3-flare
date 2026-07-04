@@ -1,0 +1,21 @@
+// ── add-blog：文章模型 ─────────────────────────────────────────
+// 將此 model 追加到 prisma/schema.prisma 尾端。
+// 並在既有的 `model User { ... }` 內加一行反向關聯：
+//     articles      Article[]
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique // 發佈後鎖定，避免斷連結
+  excerpt     String // meta description / 列表卡片
+  content     String // ProseMirror JSON（JSON.stringify）
+  plainText   String // 由 content 抽出的純文字，供搜尋 / 閱讀時間
+  status      String    @default("draft") // "draft" | "published"
+  publishedAt DateTime? // 首次發佈時寫入，可手改；草稿為 null
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([status, publishedAt])
+}

@@ -3,6 +3,11 @@
 版本號對應 `plugin.json` / `marketplace.json` 的 `version`。改動 skill 或 template 後 bump 版本,
 安裝端才會建新的 cache 目錄、確實抓到更新(cache 以版本號為 key)。
 
+## 0.1.2
+
+- **feat(skill)**: 新增 **add-blog** feature skill —— 在既有 t3-flare 專案上疊加文章系統:tiptap 富文本編輯器、程式碼高亮(lowlight,server 端渲染避免 tiptap 進 Worker bundle)、公開 `/articles` + `/articles/[slug]`、後台 `/admin/articles` CRUD、草稿預覽。v1 不含標籤/精選/分頁。
+- 已用「degit template → 套用 add-blog → install → build」端到端驗證(tsc/biome/next build 全綠,文章路由完整)。
+
 ## 0.1.1
 
 - **fix(template)**: better-auth 動態 `trustedOrigins`(信任請求自身來源)—— 修瀏覽器登入 403 Invalid origin;首次部署即可登入,免回填 URL、免二次部署。
