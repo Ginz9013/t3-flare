@@ -25,4 +25,7 @@ perl -0777 -i -pe 's/\n[^\n]*\[module:r2\][^\n]*\n[^\n]*href: "\/admin\/media"[^
 echo "▸ 以 biome 清理未用 import 與格式…"
 npx --no-install biome check --write --unsafe . >/dev/null 2>&1 || true
 
+# 清掉可能殘留的建置產物，避免 .next/types 參照已刪路由造成 typecheck 誤判
+rm -rf .next .open-next
+
 echo "✓ R2 模組已移除。"
