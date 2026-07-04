@@ -18,13 +18,8 @@ html,
 body {
 	margin: 0;
 	padding: 0;
-	background: #000;
-	scroll-behavior: auto;
-}
-
-::selection {
-	background: rgba(255, 255, 255, 0.88);
-	color: #000;
+	background: var(--background);
+	color: var(--foreground);
 }
 
 @theme inline {

@@ -1,0 +1,46 @@
+name: template CI
+
+on:
+  push:
+    paths: ["template/**", ".github/workflows/ci.yml"]
+  pull_request:
+    paths: ["template/**", ".github/workflows/ci.yml"]
+
+defaults:
+  run:
+    working-directory: template
+
+env:
+  SKIP_ENV_VALIDATION: "1"
+
+jobs:
+  # 路徑一：全功能版恆綠
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: template/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run check
+      - run: npx opennextjs-cloudflare build
+
+  # 路徑二:刪除 R2 模組後仍恆綠(驗證減法契約)
+  without-r2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: template/package-lock.json
+      - run: npm ci
+      - run: bash scripts/remove-r2.sh
+      - run: npm run typecheck
+      - run: npm run check
+      - run: npx opennextjs-cloudflare build
