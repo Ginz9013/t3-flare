@@ -1,13 +1,10 @@
 {
 	"name": "t3-flare",
 	"owner": {
-		"name": "kouhei",
-		"url": "https://github.com/Ginz9013/t3-flare"
+		"name": "kouhei"
 	},
-	"metadata": {
-		"description": "t3-flare — The T3 Stack on Cloudflare。含 site-butler 網站管家 skill。",
-		"version": "0.1.0"
-	},
+	"description": "t3-flare — The T3 Stack on Cloudflare。含 site-butler 網站管家 skill。",
+	"version": "0.1.0",
 	"plugins": [
 		{
 			"name": "site-butler",

@@ -10,11 +10,32 @@ A website scaffolding system for the Cloudflare full stack + T3 Stack — a batt
 
 Next.js App Router · OpenNext · Cloudflare Workers · D1 · R2 · Prisma (`adapter-d1`) · tRPC · better-auth · Tailwind + shadcn/ui · Biome
 
-## Status
+## 兩種用法 / Two ways to use
 
-🚧 規劃定案，開發中 / Planning finalized, under construction.
+### 工程師：直接拉 template
 
-完整規劃與決策記錄見 [`docs/PLANNING.md`](docs/PLANNING.md)。
+```bash
+npx degit Ginz9013/t3-flare/template my-site
+```
+
+不要圖片上傳功能就 `bash scripts/remove-r2.sh`（見 [`template/modules.md`](template/modules.md)）。本機開發與部署見 [`template/README.md`](template/README.md)。
+
+### 非工程使用者：讓 AI 幫你架站
+
+在 Claude Code 裡安裝 site-butler,然後說「我想做一個網站」即可:
+
+```
+/plugin marketplace add Ginz9013/t3-flare
+/plugin install site-butler@t3-flare
+```
+
+你只需要:一個 Cloudflare 帳號、綁信用卡、瀏覽器點一次授權;建資料庫、部署等雲端操作全由 AI 代做。
+
+## 結構
+
+- [`template/`](template/) — 實戰驗證的 Cloudflare + T3 骨架(全功能、可減法、CI 雙路徑驗證)
+- [`plugins/site-butler/`](plugins/site-butler/) — AI 網站管家 skill
+- [`docs/PLANNING.md`](docs/PLANNING.md) — 完整規劃與決策記錄
 
 ## License
 
