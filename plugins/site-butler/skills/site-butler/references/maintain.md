@@ -51,6 +51,18 @@ npx wrangler d1 export <slug> --remote --output backup-$(date +%Y%m%d).sql
 ```
 並把 `BETTER_AUTH_URL` 更新為該網域,重新 `cf:deploy`。
 
+## 砍掉重練 / 移除整個站
+
+要完全移除一個站(釋放 Cloudflare 資源、避免佔用名稱與費用):
+
+```bash
+npx wrangler delete --name <slug>          # 刪除 Worker(線上網站)
+npx wrangler d1 delete <slug>              # 刪除 D1 資料庫(資料一併消失,先確認)
+npx wrangler r2 bucket delete <slug>       # 若當初有建 R2；bucket 需先清空物件
+```
+
+**破壞性且不可逆** —— 執行前先向使用者白話確認「這會把整個網站與所有資料刪掉,無法復原」。之後刪本機專案資料夾即可。若只是要用同名重建,刪掉這些資源後再重跑供裝流程。
+
 ## 升級語義
 
 專案是 scaffold 當下的**快照**,template 之後的改良不自動套用。`.template-version` 記錄了基準 commit。遇到必須修的重大問題(如 OpenNext breaking change),以「針對這個專案的一次性手術」處理,不建立自動升級機制。
