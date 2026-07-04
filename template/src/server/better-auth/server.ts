@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
 import { cache } from "react";
-
-import { getAuth } from ".";
 import { getDb } from "~/server/db";
+import { getAuth } from ".";
 
 export const getSession = cache(async () => {
 	const auth = getAuth(await getDb());

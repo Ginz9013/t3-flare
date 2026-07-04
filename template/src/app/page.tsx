@@ -11,7 +11,7 @@ export default function Home() {
 					<h1 className="font-bold text-5xl tracking-tight sm:text-6xl">
 						my-site
 					</h1>
-					<p className="max-w-md text-muted-foreground text-lg">
+					<p className="max-w-md text-lg text-muted-foreground">
 						Built with <span className="font-medium">t3-flare</span> — the T3
 						Stack, deployed on Cloudflare.
 					</p>

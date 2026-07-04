@@ -14,4 +14,5 @@ export default config;
 
 // 讓 `next dev` 期間可使用 Cloudflare 綁定（getCloudflareContext）
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
 void initOpenNextCloudflareForDev();

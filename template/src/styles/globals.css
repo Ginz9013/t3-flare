@@ -140,14 +140,14 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+	* {
+		@apply border-border outline-ring/50;
 	}
-  body {
-    @apply bg-background text-foreground;
+	body {
+		@apply bg-background text-foreground;
 	}
-  html {
-    @apply font-sans;
+	html {
+		@apply font-sans;
 	}
 }
 
@@ -326,7 +326,8 @@ body {
 
 .glass-surface--svg {
 	background: hsl(0 0% 0% / var(--glass-frost, 0));
-	backdrop-filter: var(--filter-id, url(#glass-filter)) saturate(var(--glass-saturation, 1));
+	backdrop-filter: var(--filter-id, url(#glass-filter))
+		saturate(var(--glass-saturation, 1));
 	box-shadow:
 		0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
 		0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,

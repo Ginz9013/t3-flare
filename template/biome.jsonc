@@ -1,69 +1,93 @@
 {
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "root": true,
-  "vcs": {
-    "enabled": true,
-    "useIgnoreFile": true,
-    "clientKind": "git",
-  },
-  "assist": {
-    "enabled": true,
-    "actions": {
-      "recommended": true,
-      "source": {
-        "recommended": true,
-        "organizeImports": "on",
-        "useSortedAttributes": "on",
-      },
-    },
-  },
-  "formatter": {
-    "enabled": true,
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "nursery": {
-        "useSortedClasses": {
-          "level": "warn",
-          "fix": "safe",
-          "options": {
-            "functions": ["clsx", "cva", "cn"],
-          },
-        },
-      },
-    },
-  },
-  "html": {
-    "formatter": {
-      "enabled": true,
-    },
-  },
-  "javascript": {
-    "assist": {
-      "enabled": true,
-    },
-    "formatter": {
-      "enabled": true,
-    },
-    "linter": {
-      "enabled": true,
-    },
-  },
-  "css": {
-    "assist": {
-      "enabled": true,
-    },
-    "formatter": {
-      "enabled": true,
-    },
-    "linter": {
-      "enabled": true,
-    },
-    "parser": {
-      "cssModules": true,
-      "tailwindDirectives": true,
-    },
-  },
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"root": true,
+	"vcs": {
+		"enabled": true,
+		"useIgnoreFile": true,
+		"clientKind": "git"
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"recommended": true,
+			"source": {
+				"recommended": true,
+				"organizeImports": "on",
+				"useSortedAttributes": "on"
+			}
+		}
+	},
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"nursery": {
+				"useSortedClasses": {
+					"level": "warn",
+					"fix": "safe",
+					"options": {
+						"functions": ["clsx", "cva", "cn"]
+					}
+				}
+			}
+		}
+	},
+	"html": {
+		"formatter": {
+			"enabled": true
+		}
+	},
+	"javascript": {
+		"assist": {
+			"enabled": true
+		},
+		"formatter": {
+			"enabled": true
+		},
+		"linter": {
+			"enabled": true
+		}
+	},
+	"css": {
+		"assist": {
+			"enabled": true
+		},
+		"formatter": {
+			"enabled": true
+		},
+		"linter": {
+			"enabled": true
+		},
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		}
+	},
+	"overrides": [
+		{
+			// components/ui/** 為 shadcn 原樣元件，放寬其上游既有的 lint 規則，
+			// 以保持與 shadcn registry 一致、避免每次更新元件都要手動改。
+			"includes": ["src/components/ui/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useFocusableInteractive": "off",
+						"useSemanticElements": "off",
+						"noLabelWithoutControl": "off",
+						"noStaticElementInteractions": "off",
+						"noSvgWithoutTitle": "off"
+					},
+					"suspicious": {
+						"noDocumentCookie": "off"
+					},
+					"correctness": {
+						"useExhaustiveDependencies": "off"
+					}
+				}
+			}
+		}
+	]
 }
