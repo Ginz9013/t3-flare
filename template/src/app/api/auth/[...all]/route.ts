@@ -1,5 +1,10 @@
-import { toNextJsHandler } from "better-auth/next-js";
+import { getAuth } from "~/server/better-auth";
+import { getDb } from "~/server/db";
 
-import { auth } from "~/server/better-auth";
+// auth 為 per-request（D1 binding 屬請求範圍），於 handler 內建立
+async function handler(req: Request) {
+	const auth = getAuth(await getDb());
+	return auth.handler(req);
+}
 
-export const { GET, POST } = toNextJsHandler(auth.handler);
+export { handler as GET, handler as POST };

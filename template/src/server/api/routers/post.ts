@@ -1,41 +1,77 @@
 import { z } from "zod";
 
 import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
 } from "~/server/api/trpc";
 
+/**
+ * 範例內容資源的 CRUD router。後台以 protectedProcedure 管理，
+ * 前台以 publicProcedure 讀取已發佈內容。可整份複製改名成你的資源。
+ */
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
+	// ── 前台：已發佈列表 ──────────────────────────────
+	listPublished: publicProcedure.query(async ({ ctx }) => {
+		return ctx.db.post.findMany({
+			where: { published: true },
+			orderBy: { createdAt: "desc" },
+		});
+	}),
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
-    }),
+	// ── 後台：全部列表 ────────────────────────────────
+	list: protectedProcedure.query(async ({ ctx }) => {
+		return ctx.db.post.findMany({ orderBy: { createdAt: "desc" } });
+	}),
 
-  getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
+	byId: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ ctx, input }) => {
+			return ctx.db.post.findUnique({ where: { id: input.id } });
+		}),
 
-    return post ?? null;
-  }),
+	create: protectedProcedure
+		.input(
+			z.object({
+				title: z.string().min(1),
+				content: z.string().optional(),
+				published: z.boolean().default(false),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return ctx.db.post.create({
+				data: {
+					title: input.title,
+					content: input.content,
+					published: input.published,
+					createdBy: { connect: { id: ctx.session.user.id } },
+				},
+			});
+		}),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+	update: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				title: z.string().min(1),
+				content: z.string().optional(),
+				published: z.boolean(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return ctx.db.post.update({
+				where: { id: input.id },
+				data: {
+					title: input.title,
+					content: input.content,
+					published: input.published,
+				},
+			});
+		}),
+
+	delete: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			return ctx.db.post.delete({ where: { id: input.id } });
+		}),
 });

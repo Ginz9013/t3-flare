@@ -38,5 +38,11 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "generated"]
+  "exclude": [
+    "node_modules",
+    "generated",
+    ".open-next",
+    ".wrangler",
+    "worker-configuration.d.ts"
+  ]
 }

@@ -5,6 +5,13 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+	// 讓 Prisma client 交給 OpenNext 於 workerd 端打包/patch，而非 webpack
+	serverExternalPackages: ["@prisma/client", ".prisma/client"],
+};
 
 export default config;
+
+// 讓 `next dev` 期間可使用 Cloudflare 綁定（getCloudflareContext）
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+void initOpenNextCloudflareForDev();
