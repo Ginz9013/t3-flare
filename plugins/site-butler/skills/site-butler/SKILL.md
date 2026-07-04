@@ -11,10 +11,10 @@ description: 全程網站管家 — 為使用者從零建立並部署一個 Clou
 
 ## 流程總覽(逐階段;指令細節見 references)
 
-0. **前置檢查** — node/npm/git、wrangler 已裝且 `wrangler whoami` 已登入;講清楚 R2/付費門檻的費用。見 [references/provision.md](references/provision.md)。
-1. **訪談** — 白話問:網站名稱?用途?要不要上傳圖片/相簿(決定是否保留 R2)?管理員 email 與密碼(可代生)。
+0. **開場說明 + 帳號準備** — 先用白話說明:網站會放在 **Cloudflare** 這個平台上;基本功能(網站、資料庫)在**免費額度內、不用綁卡**;只有「上傳圖片」功能需要在 Cloudflare **綁一張信用卡**(仍是免費額度,平台規定)。請使用者先到 [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up) 註冊免費帳號,再 `npx wrangler login`(開瀏覽器點允許 —— 這是他唯一要親自做的)。**綁卡不在此強制**,留到第 3 步真的要建 R2 時再檢查。接著做技術前置檢查(node/npm/git/wrangler)。見 [references/provision.md](references/provision.md)。
+1. **訪談** — 白話問:網站名稱?用途?要不要上傳圖片/相簿(決定是否保留 R2、以及是否需要綁卡)?管理員 email 與密碼(可代生)。
 2. **組裝** — `npx degit Ginz9013/t3-flare/template <dir>`;不要圖片上傳就 `bash scripts/remove-r2.sh`;把 `my-site` 全域改成使用者的名稱;寫入 `.template-version`;`npm install`;`git init` + 首次 commit。見 [references/provision.md](references/provision.md)。
-3. **供裝 Cloudflare** — `wrangler d1 create` → 把 id 填回 `wrangler.jsonc` 的 `PLACEHOLDER_D1_DATABASE_ID`;(有 R2)`wrangler r2 bucket create`;產 `BETTER_AUTH_SECRET` → 寫入 `.env`(build 時驗證需要)+ `wrangler secret put`(runtime)。見 [references/provision.md](references/provision.md)。
+3. **供裝 Cloudflare** — `wrangler d1 create` → 把 id 填回 `wrangler.jsonc` 的 `PLACEHOLDER_D1_DATABASE_ID`;**(有 R2)建 bucket 前先確認已綁卡** —— `wrangler r2 bucket create` 若因未啟用 R2/未綁卡而失敗,白話請使用者到 Cloudflare 後台開通 R2 並綁卡後再繼續;產 `BETTER_AUTH_SECRET` → 寫入 `.env`(build 時驗證需要)+ 首次部署後 `wrangler secret put`(runtime)。見 [references/provision.md](references/provision.md)。
 4. **資料庫 + 管理員** — `npm run cf:migrate`;`gen-admin-sql.ts` 產 SQL → `wrangler d1 execute --remote --file`;把網址與帳密寫進專案根的 `ADMIN.md`(已 gitignore)。見 [references/provision.md](references/provision.md)。
 5. **部署** — `npm run cf:deploy` → 取得 `https://<name>.<subdomain>.workers.dev`。見 [references/deploy.md](references/deploy.md)。
 6. **驗證** — curl 首頁 200、實際登入後台一次;失敗則 `wrangler tail` 診斷自我修復,直到真的能開。見 [references/deploy.md](references/deploy.md)。

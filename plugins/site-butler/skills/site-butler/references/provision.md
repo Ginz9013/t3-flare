@@ -1,18 +1,40 @@
-# provision — 前置檢查、訪談、組裝、Cloudflare 供裝
+# provision — 開場、前置檢查、訪談、組裝、Cloudflare 供裝
 
-## 0. 前置檢查
+## 0. 開場說明 + 帳號準備
+
+### 先用白話開場(對非工程使用者,一開始就講清楚,別跳進技術指令)
+
+參考講法:
+
+> 我會用一個叫 **Cloudflare** 的平台,幫你把網站放到網路上、還附一個可以自己改內容的後台。
+> 費用上:網站本身和資料庫都在**免費額度**內,不用付錢也不用綁卡。
+> 只有一個例外 —— 如果你要「**上傳圖片**」的功能,Cloudflare 規定那部分要在後台**綁一張信用卡**(一樣是免費額度,只是平台要求要有卡)。這個等下我會問你要不要。
+> 你只要做一件事:**去 Cloudflare 註冊一個免費帳號**,然後我帶你授權一次,剩下全部我來。
+
+### 帳號與登入
+
+1. 請使用者到 **https://dash.cloudflare.com/sign-up** 註冊免費帳號(email + 密碼即可,不需綁卡)。
+2. 授權 wrangler 使用該帳號:
+   ```bash
+   npx wrangler login   # 會開瀏覽器,請使用者點「Allow」。這是他唯一要親自做的技術動作。
+   ```
+3. 確認登入成功:`npx wrangler whoami`。
+
+### 費用與綁卡時機(重要)
+
+- **不用綁卡就能用**:Cloudflare 帳號、Workers(網站)、D1(資料庫)、`workers.dev` 子網域。
+- **需要綁卡**:R2(圖片上傳)——Cloudflare 規定啟用 R2 要有付款方式,即使用免費額度亦然。
+- 綁卡**不在開場強制**;等第 3 步、使用者確定要圖片上傳、真的要建 R2 時再檢查(見該步)。自訂網域另需網域已在 Cloudflare 管理。
+
+### 技術前置檢查
 
 ```bash
 node -v            # 需要 20+
 npm -v
 git --version      # 沒有 → 提議代裝：macOS `brew install git`、Windows `winget install Git.Git`
 npx wrangler --version
-npx wrangler whoami # 未登入 → 引導使用者：wrangler login 會開瀏覽器，點「Allow」即可
 ```
-
-- `wrangler` 用 `npx wrangler`(專案已含 dev 依賴,不必全域安裝)。
-- 若 `whoami` 顯示未登入,請使用者執行 `npx wrangler login` 並在瀏覽器點允許。這是使用者唯一需要親自做的技術動作。
-- **費用**:D1、Workers 有免費額度,`workers.dev` 子網域免費。R2 需要在 Cloudflare 綁定信用卡(仍有免費額度)。若使用者要 R2 或自訂網域,先講清楚。
+`wrangler` 用 `npx wrangler`(專案已含 dev 依賴,不必全域安裝)。
 
 ## 1. 訪談(白話,一次一題)
 
@@ -57,9 +79,15 @@ npx wrangler d1 create <slug>
 輸出會包含一段 `database_id = "xxxxxxxx-xxxx-..."`。**用這個 UUID 取代 `wrangler.jsonc` 裡的 `PLACEHOLDER_D1_DATABASE_ID`**(用 Edit 精準替換)。少了這步部署會連不到 DB。
 
 ```bash
-# R2（若保留了圖片上傳）
+# R2（若保留了圖片上傳）—— 建 bucket 前的綁卡檢查點
 npx wrangler r2 bucket create <slug>
+```
+若這步失敗、訊息提到 R2 未啟用 / 需要付款方式(未綁卡),**用白話請使用者處理**:
+> 「圖片上傳這個功能需要先在 Cloudflare 開通並綁一張卡(仍是免費額度)。請到 Cloudflare 後台 → R2,點開通並填一張信用卡,弄好跟我說,我繼續。」
 
+開通綁卡後重跑 `wrangler r2 bucket create <slug>` 即可。若使用者不想綁卡 → 改成不要圖片上傳,回第 2 步跑 `bash scripts/remove-r2.sh` 後繼續。
+
+```bash
 # BETTER_AUTH_SECRET：build 時與 runtime 都需要
 SECRET=$(openssl rand -base64 32)
 ```
