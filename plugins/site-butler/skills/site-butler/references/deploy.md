@@ -22,13 +22,11 @@ printf '%s' "$SECRET" | npx wrangler secret put BETTER_AUTH_SECRET
 
 設 secret 不需要重新部署即生效。若不確定 `$SECRET` 還在,重新產生一組並同步更新 `.env` 後再 `secret put`。
 
-### （選配）設定對外網址
+### 瀏覽器登入的 origin(template 已內建處理)
 
-email/密碼登入用 request 推導的 origin 即可運作,`BETTER_AUTH_URL` 非必需。若要更嚴謹(未來加 OAuth 回呼等),於 `wrangler.jsonc` 加:
-```jsonc
-"vars": { "BETTER_AUTH_URL": "https://<slug>.<subdomain>.workers.dev" }
-```
-然後 `npm run cf:deploy` 再跑一次。
+better-auth 會擋掉來源不在信任清單的登入請求(CSRF 保護)。template 的 better-auth config 已設 `trustedOrigins` 為「動態信任請求自身來源」,因此**首次部署即可從瀏覽器登入,不需要知道或回填 workers.dev 網址、也不需要第二次部署**。
+
+`BETTER_AUTH_URL` 因此非必需;僅在你要一個「正式對外網址」用於產生連結時,才於 `wrangler.jsonc` 加 `"vars": { "BETTER_AUTH_URL": "https://<你的網址>" }` 並重新部署。
 
 ## 6. 驗證(做到「真的能開」才算完成)
 
@@ -51,6 +49,7 @@ npx wrangler tail <slug>     # 即時看 Worker log,另開一個請求觸發
 |---|---|---|
 | 500 / 首頁打不開 | `database_id` 還是 placeholder | 用 `wrangler d1 create` 的真實 id 取代後重部署 |
 | 登入後又被踢回 | runtime `BETTER_AUTH_SECRET` 未設 | `wrangler secret put BETTER_AUTH_SECRET` |
+| 登入回 403 `Invalid origin` | 專案的 better-auth config 缺動態 `trustedOrigins`(舊版 scaffold) | 補上 config.ts 的 `trustedOrigins`(見 template)後重部署 |
 | 登入說帳密錯 | admin seed SQL 沒套用成功 | 重跑 gen-admin-sql + `d1 execute --remote` |
 | build 失敗說缺 env | `.env` 沒有 `BETTER_AUTH_SECRET` | 補進 `.env` 再 `cf:deploy` |
 | 圖片上傳 500 | R2 bucket 未建 / binding 名不符 | `wrangler r2 bucket create <slug>`,對照 `wrangler.jsonc` |
