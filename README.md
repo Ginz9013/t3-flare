@@ -2,115 +2,109 @@
 
 > The T3 Stack, deployed on Cloudflare — by you or by your AI.
 
-**跟 AI 說一句「我想做一個網站」,就幫你把一個含後台的網站建好、上線。** 從建立資料庫、設定伺服器到部署，所有雲端操作都由 AI 透過指令自動完成，你不需要碰任何程式碼。
+t3-flare 讓你透過 AI 對話，建立並部署一個具備內容管理後台的完整網站。從資料庫建立、伺服器設定到上線部署，所有雲端操作皆由 AI 助理自動執行，過程中無需撰寫程式碼。
 
-t3-flare 提供一個實戰驗證的網站骨架，以及一個跑在 Claude Code 裡的 AI 網站管家 **site-butler**，帶你從零把網站做出來並上線。
+專案包含一套經實戰驗證的網站骨架，以及運行於 Claude Code 的 AI 網站助理 **site-butler**，協助你完成從零到上線的完整流程。
 
 ---
 
 ## 技術架構
 
-你的網站會用以下技術棧建立並部署到 [Cloudflare](https://www.cloudflare.com/)：
+網站採用下列技術棧，並部署至 [Cloudflare](https://www.cloudflare.com/)：
 
-| 層面 | 使用技術 |
+| 層面 | 技術 |
 |---|---|
-| 前端框架 | Next.js（App Router）+ React 19 |
+| 前端框架 | Next.js（App Router）、React 19 |
 | 部署平台 | Cloudflare Workers（透過 OpenNext） |
-| 資料庫 | Cloudflare D1（SQLite）+ Prisma |
-| 檔案儲存 | Cloudflare R2（圖片上傳） |
-| API | tRPC（型別安全） |
-| 登入系統 | better-auth（單一管理員後台） |
-| 介面 | Tailwind CSS v4 + shadcn/ui + lucide 圖示 |
+| 資料庫 | Cloudflare D1（SQLite）、Prisma |
+| 檔案儲存 | Cloudflare R2 |
+| API | tRPC |
+| 身分驗證 | better-auth（單一管理員） |
+| 使用者介面 | Tailwind CSS v4、shadcn/ui、lucide-react |
 
-**你會得到：**
+建置成果包含：
 
-- 一個公開的網站，網址形如 `https://你的網站.workers.dev`
-- 一個可以自己登入、修改內容的**後台**（`/admin`）
-- 選配：圖片上傳、部落格文章系統（tiptap 編輯器 + 程式碼高亮）
+- 一個公開網站，網址形式為 `https://<名稱>.workers.dev`
+- 一個可登入管理內容的後台（`/admin`）
+- 選用功能：圖片上傳、部落格文章系統（tiptap 編輯器與程式碼高亮）
 
-**費用：** 網站與資料庫都在 Cloudflare **免費額度**內，不需付費也不需綁卡。只有「圖片上傳」功能因 Cloudflare 規定，需要在帳號綁一張信用卡（同樣有免費額度）。
+**費用說明**：網站與資料庫運行於 Cloudflare 免費額度內，無需付費或綁定信用卡。圖片上傳功能因 Cloudflare 平台規範，需於帳號綁定信用卡，惟同樣適用免費額度。
 
 ---
 
 ## 事前準備
 
-開始之前，你需要兩樣東西：
+開始前需具備以下兩項條件。
 
-### 1. 一個 Cloudflare 帳號
+### 1. Cloudflare 帳號
 
-網站要放在 Cloudflare 上，所以先到 **[dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)** 註冊一個免費帳號（用 email + 密碼即可，註冊不需綁卡）。
+網站將部署於 Cloudflare。請先至 **[dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)** 註冊免費帳號，僅需 email 與密碼，註冊無需綁定信用卡。
 
-> 綁卡只有在你之後選擇「圖片上傳」功能時才需要，AI 會在需要時再提醒你。
+> 綁定信用卡僅在啟用圖片上傳功能時需要，助理會於適當時機提示。
 
 ### 2. Claude Code
 
-site-butler 是跑在 **[Claude Code](https://www.claude.com/product/claude-code)** 裡的工具。請先安裝並登入 Claude Code（桌面版、VSCode 擴充或終端機皆可）。
+site-butler 運行於 **[Claude Code](https://www.claude.com/product/claude-code)**。請先安裝並登入 Claude Code，其提供桌面版、VSCode 擴充套件與終端機介面。
 
 ---
 
 ## 安裝 site-butler
 
-在 **Claude Code 介面裡**（不是一般終端機）輸入以下兩行指令：
+於 Claude Code 介面中（非一般終端機）執行下列指令：
 
 ```
 /plugin marketplace add Ginz9013/t3-flare
 /plugin install site-butler@t3-flare
 ```
 
-第一行把 t3-flare 加入你的外掛來源，第二行安裝 site-butler。裝好後可能需要重新開啟 Claude Code。
+第一行將 t3-flare 加入外掛來源，第二行安裝 site-butler。安裝完成後可能需重新啟動 Claude Code。
 
 ---
 
-## 開始建立網站
+## 建立網站
 
-### 步驟一：開一個空資料夾並啟動
+### 步驟一：建立專案資料夾
 
 ```bash
 mkdir my-website
 cd my-website
 ```
 
-在這個資料夾裡開啟 Claude Code。
+於此資料夾中開啟 Claude Code。
 
-### 步驟二：跟 AI 說你要做網站
+### 步驟二：啟動 site-butler
 
-直接輸入：
+輸入以下訊息即可啟動助理：
 
-> 我想做一個網站
+> 我想建立一個網站
 
-site-butler 就會啟動，接手接下來的所有步驟。
+亦可直接描述用途，例如「我想建立一個作品集網站」。
 
-### 步驟三：跟著 AI 走完流程
+### 步驟三：完成建置流程
 
-AI 會依序帶你完成（你只需要用白話回答問題）：
+助理將依序引導你完成下列步驟：
 
-1. **說明與授權** — AI 會說明整個流程與費用，並引導你授權它使用你的 Cloudflare 帳號（會開啟瀏覽器，你點一次「Allow」即可 —— 這是你唯一需要親自做的技術動作）。
-2. **了解你的需求** — AI 會問幾個簡單問題：
-   - 網站要叫什麼名字？
-   - 這個網站是做什麼用的？
-   - 需不需要「上傳圖片」的功能？
-   - 想用哪個 email 和密碼登入後台？（密碼也可以請 AI 幫你產生）
-3. **自動建立與部署** — 接著 AI 會自動幫你：建立資料庫、建立網站、設定登入系統、部署上線。這段你只要等它跑完。
-4. **交付成果** — 完成後 AI 會給你：
-   - 你的**網站網址**
-   - 你的**後台網址**與**帳號密碼**（會存在專案裡的 `ADMIN.md` 檔案）
+1. **說明與授權** — 助理會說明流程與費用，並引導你授權其存取 Cloudflare 帳號。授權透過瀏覽器完成一次確認，為整個流程中唯一需要你親自操作的步驟。
+2. **需求確認** — 助理會詢問網站名稱、用途、是否需要圖片上傳功能，以及後台管理帳號的 email 與密碼（密碼亦可由助理產生）。
+3. **自動建置與部署** — 助理自動建立資料庫、檔案儲存空間與登入系統，並完成部署。
+4. **交付** — 完成後提供網站網址、後台網址與登入資訊，登入資訊會記錄於專案中的 `ADMIN.md`。
 
-### 步驟四：登入後台、開始使用
+### 步驟四：登入後台
 
-打開 AI 給你的後台網址（網站網址後面加 `/admin`），用你的帳號密碼登入，就能開始管理內容了。
+開啟後台網址（於網站網址後加上 `/admin`），以登入資訊進入後即可管理內容。
 
 ---
 
-## 之後想改東西？
+## 後續維護與擴充
 
-網站做好之後，任何調整都一樣 —— **在同一個資料夾開 Claude Code，直接跟 AI 說**就好：
+網站上線後，各項調整同樣透過與助理對話完成 —— 於專案資料夾中開啟 Claude Code 並描述需求即可，例如：
 
-- 「幫我把首頁的標題改成 ___」
-- 「幫我加一個部落格」 → AI 會用 **add-blog** 幫你加上文章系統（含編輯器、文章頁）
-- 「我忘記後台密碼了」 → AI 幫你重設
-- 「幫我把網站換成我自己的網域」
+- 修改頁面內容或文案
+- 新增部落格：助理透過 **add-blog** 為網站加入文章系統（含編輯器與文章頁）
+- 重設後台密碼
+- 綁定自訂網域
 
-AI 會先在本機讓你預覽，你滿意後才更新到線上。
+助理會先於本機提供預覽，經你確認後再更新至線上。
 
 ---
 
