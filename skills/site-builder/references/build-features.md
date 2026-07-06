@@ -55,6 +55,10 @@ npm run cf:deploy  # go live after the user signs off
 
 After deploying, actually exercise the feature once on the **production URL** (create a record, walk through a user flow) before considering it done.
 
+### 6. Report the routes to the user (required)
+
+New pages are **not** automatically linked from the home page, so the user won't find them unless you say where they are. After deploying, list the full URLs to check the result (replace `<site>` with the live site URL) — e.g. the public page (`<site>/<feature>`) and the admin page (`<site>/admin/<feature>`) — and briefly state what changed (new model + migration, pages added, sidebar item). If the user wants the new page linked from the home page or navigation, offer to add that link.
+
 ## Example: how "students booking class sessions" lands on the rails
 
 1. **model**: `Course` (title, teacher, capacity, startsAt) and `Booking` (courseId relation, studentName, email, createdAt, `@@unique([courseId, email])` to prevent duplicate bookings)

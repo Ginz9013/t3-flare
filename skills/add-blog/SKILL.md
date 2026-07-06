@@ -23,6 +23,11 @@ Layer an article system onto a **t3-flare project that was already built with si
 6. **Dependencies** — add the tiptap packages and `npm install` (see the list in apply.md).
 7. **Migrate** — `npm run db:generate` (generate a local migration) → copy that migration SQL to `prisma/d1-migrations/000N_add_article.sql` → `npm run cf:migrate`.
 8. **Deploy + verify** — `npm run cf:deploy`; open `/admin/articles`, add an article, publish it, and confirm `/articles` and `/articles/<slug>` render correctly (including code highlighting).
+9. **Report to the user (required)** — Tell the user what was added and, most importantly, **the routes to check the result**. The new pages are **not** automatically linked from the home page, so the user won't find them unless you list them. Give the full URLs (replace `<site>` with the live site URL):
+   - **Blog (public)**: `<site>/articles` — and each post at `<site>/articles/<slug>`
+   - **Write / manage (admin)**: `<site>/admin/articles`
+
+   Also state briefly what changed (new `Article` model + D1 migration applied, article pages added, "Articles" item added to the admin sidebar). If the user wants the blog linked from the home page or site navigation, offer to add that link.
 
 ## Guardrails
 

@@ -32,6 +32,11 @@ The code **degrades gracefully**: with no Turnstile keys set, the widget isn't s
 5. **Admin navigation** — add a "Contacts" item → `/admin/contacts` to `navItems` in `app-sidebar.tsx` (icon like `Mail`).
 6. **Migrate** — `prisma migrate dev --name add_contact` → copy the SQL to `prisma/d1-migrations/000N_add_contact.sql` → `npm run cf:migrate`.
 7. **Deploy + verify the core** — `npm run cf:deploy`; open `/contact`, send a test message, and confirm `/admin/contacts` receives it and lets you view it.
+8. **Report to the user (required)** — Tell the user what was added and, most importantly, **the routes to check the result**. The new pages are **not** automatically linked from the home page, so list the full URLs (replace `<site>` with the live site URL):
+   - **Contact form (public)**: `<site>/contact`
+   - **Inbox (admin)**: `<site>/admin/contacts`
+
+   Also state briefly what changed (new `Contact` model + D1 migration applied, contact page added, "Contacts" item added to the admin sidebar) and whether Turnstile / email are on or still optional. If the user wants the contact page linked from the home page or site navigation, offer to add that link.
 
 ## Optional setup (do these only when the user wants them, see apply.md)
 
