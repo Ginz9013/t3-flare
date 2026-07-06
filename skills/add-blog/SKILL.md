@@ -5,7 +5,7 @@ description: 在已建立的 t3-flare 網站上加一套部落格 / 文章系統
 
 # add-blog
 
-在**已經用 site-butler 建好的 t3-flare 專案**上疊加一套文章系統(Article model + tiptap 編輯器 + 前台 /articles + 程式碼高亮)。以「加檔案 → 改 schema → 遷移 → 部署 → 驗證」收尾,對使用者用白話,不提技術名詞。
+在**已經用 site-builder 建好的 t3-flare 專案**上疊加一套文章系統(Article model + tiptap 編輯器 + 前台 /articles + 程式碼高亮)。以「加檔案 → 改 schema → 遷移 → 部署 → 驗證」收尾,對使用者用白話,不提技術名詞。
 
 ## 前置確認
 

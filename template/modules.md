@@ -4,7 +4,7 @@
 不需要的模組**刪除**，而非用開關生成。刪除步驟以腳本固化，CI 對「全功能」與
 「刪除後」兩條路徑都驗證能 build，避免此契約與現實脫節。
 
-site-butler skill 於 scaffold 時，依使用者需求呼叫對應腳本裁切。
+site-builder skill 於 scaffold 時，依使用者需求呼叫對應腳本裁切。
 
 ---
 

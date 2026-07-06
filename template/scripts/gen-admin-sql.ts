@@ -2,7 +2,7 @@
  * 產生 remote D1 用的單一管理員 seed SQL（user + credential account）。
  * 正式 D1 跑不了 node seed，故由此輸出 SQL，交給 `wrangler d1 execute --remote --file` 套用。
  * 密碼以 Better Auth 的雜湊器產生，確保登入時能驗證。
- * site-butler 於「初次部署」與「重設密碼」時皆使用（SQL 為 DELETE + INSERT，兩者通用）。
+ * site-builder 於「初次部署」與「重設密碼」時皆使用（SQL 為 DELETE + INSERT，兩者通用）。
  *
  * 用法：ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=... [ADMIN_NAME=Admin] \
  *         npx tsx scripts/gen-admin-sql.ts > admin.sql

@@ -1,6 +1,6 @@
 # Changelog
 
-本專案的變更記錄。site-butler / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
+本專案的變更記錄。site-builder / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
 無安裝快取;取得更新只需 `git pull`。
 
 ## 0.2.0
@@ -28,4 +28,4 @@
 
 ## 0.1.0
 
-- 初版:template(Next.js + Cloudflare Workers + D1 + R2 + Prisma adapter-d1 + tRPC + better-auth + shadcn + Biome,全功能可減法、CI 雙路徑)+ site-butler skill(訪談→供裝→部署→驗證→維護)+ marketplace 打包。
+- 初版:template(Next.js + Cloudflare Workers + D1 + R2 + Prisma adapter-d1 + tRPC + better-auth + shadcn + Biome,全功能可減法、CI 雙路徑)+ site-builder skill(訪談→供裝→部署→驗證→維護)+ marketplace 打包。

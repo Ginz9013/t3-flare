@@ -9,7 +9,7 @@ const auth = getAuth(db);
 
 // ── 管理員帳號（帳密讀自 .env，不進版控）──────────────────────────
 // 本機 dev 用此 seed；正式 D1 因跑不了 node script，改用 wrangler d1 execute + SQL
-// （site-butler skill 於部署時自動處理）。
+// （site-builder skill 於部署時自動處理）。
 async function seedAdmin() {
 	const email = env.ADMIN_EMAIL;
 	const password = env.ADMIN_PASSWORD;

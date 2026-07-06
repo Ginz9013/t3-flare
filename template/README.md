@@ -32,7 +32,7 @@ wrangler secret put BETTER_AUTH_SECRET
 npm run cf:deploy
 ```
 
-> 若你透過 **site-butler** skill 建立此專案，上述雲端步驟（建資源、填 id、設 secret、建管理員、部署、驗證）皆由 AI 代為完成。
+> 若你透過 **site-builder** skill 建立此專案，上述雲端步驟（建資源、填 id、設 secret、建管理員、部署、驗證）皆由 AI 代為完成。
 
 ## 結構
 

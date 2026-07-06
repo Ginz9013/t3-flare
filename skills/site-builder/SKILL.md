@@ -1,13 +1,13 @@
 ---
-name: site-butler
-description: 全程網站管家 — 為使用者從零建立並部署一個 Cloudflare 網站(含後台、資料庫、圖片上傳),雲端操作全由 AI 代為完成。Use when the user wants to build/create/launch a website, make their own site with an admin panel, or deploy a web app to Cloudflare — especially non-technical users who can write content but get stuck on deployment. Triggers: 「我想做一個網站」「幫我架站」「做一個有後台的網站」「部署到 Cloudflare」, "build me a website", "deploy to cloudflare", "set up a site with a dashboard".
+name: site-builder
+description: 自動化建站工具 — 從零 scaffold 並部署一個 Cloudflare 網站(含後台、資料庫、圖片上傳):拉取骨架、供裝雲端資源、部署上線,全程由 AI 執行。Use when the user wants to build, create, scaffold, or launch a website, set up a site with an admin dashboard, or deploy a web app to Cloudflare. Triggers: 「我想建立一個網站」「幫我架站」「做一個有後台的網站」「部署到 Cloudflare」, "build me a website", "scaffold a site", "deploy to cloudflare", "set up a site with a dashboard".
 ---
 
-# site-butler
+# site-builder
 
-從零幫使用者建立並上線一個網站。技術棧(t3-flare:Next.js + Cloudflare Workers + D1 + R2 + better-auth)對使用者是隱形的 —— **只問用途、不問技術名詞**。使用者只需負責:Cloudflare 帳號、綁信用卡、瀏覽器點一次 OAuth 允許;其餘全由你代操。
+從零 scaffold 並上線一個網站。技術棧(t3-flare:Next.js + Cloudflare Workers + D1 + R2 + better-auth)對使用者是隱形的 —— **只問用途、不問技術名詞**。使用者只需負責:Cloudflare 帳號、綁信用卡、瀏覽器點一次 OAuth 允許;其餘的雲端操作全由你執行。
 
-面對非工程使用者:用白話、一次只問一件事、做每一步前說明你要做什麼。**目標是交付一個能開的網址 + 後台帳密,而非生完檔案就停。**
+用白話溝通、一次只問一件事、做每一步前說明你要做什麼。**目標是交付一個能開的網址 + 後台帳密,而非生完檔案就停。**
 
 ## 流程總覽(逐階段;指令細節見 references)
 
