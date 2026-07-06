@@ -20,7 +20,9 @@ const password = process.env.ADMIN_PASSWORD;
 const name = process.env.ADMIN_NAME ?? "Admin";
 
 if (!email || !password) {
-	console.error("ADMIN_EMAIL and ADMIN_PASSWORD environment variables are required (password at least 8 characters)");
+	console.error(
+		"ADMIN_EMAIL and ADMIN_PASSWORD environment variables are required (password at least 8 characters)",
+	);
 	process.exit(1);
 }
 
