@@ -1,68 +1,68 @@
 ---
 name: site-builder
-description: 自動化建站工具 — 從零 scaffold 並部署一個 Cloudflare 網站(含後台、資料庫、圖片上傳),再於既定架構上實作使用者要的功能:拉取骨架、供裝雲端資源、部署上線、逐項開發,全程由 AI 執行。Use when the user wants to build, create, scaffold, or launch a website or web app (booking, calendar, store, portfolio…), set up a site with an admin dashboard, or deploy a web app to Cloudflare. Triggers: 「我想建立一個網站」「幫我架站」「做一個有後台的網站」「做一個預約/排程/商店服務」「部署到 Cloudflare」, "build me a website", "scaffold a site", "deploy to cloudflare", "set up a site with a dashboard".
+description: Automated site-building tool — scaffolds and deploys a Cloudflare website from scratch (with an admin dashboard, database, and image uploads), then implements the features the user wants on top of the established architecture: pull the skeleton, provision cloud resources, deploy to production, and build features one by one, all driven end-to-end by the AI. Use when the user wants to build, create, scaffold, or launch a website or web app (booking, calendar, store, portfolio…), set up a site with an admin dashboard, or deploy a web app to Cloudflare. Triggers: "I want to build a website", "help me set up a site", "make me a website with an admin dashboard", "build a booking/scheduling/store service", "deploy to Cloudflare", "build me a website", "scaffold a site", "deploy to cloudflare", "set up a site with a dashboard".
 ---
 
 # site-builder
 
-從零 scaffold 並上線一個網站,再於既定架構上實作功能。技術棧(t3-flare:Next.js + Cloudflare Workers + D1 + R2 + better-auth)對使用者是隱形的 —— **只問用途、不問技術名詞**。使用者只需負責:Cloudflare 帳號、綁信用卡、瀏覽器點一次 OAuth 允許;其餘的雲端操作全由你執行。
+Scaffold and launch a website from scratch, then implement features on top of the established architecture. The tech stack (t3-flare: Next.js + Cloudflare Workers + D1 + R2 + better-auth) is invisible to the user — **ask only about purpose, never about technical jargon**. All the user needs to handle is: a Cloudflare account, adding a credit card, and clicking to allow OAuth once in the browser; you perform all the other cloud operations.
 
-用白話溝通、一次只問一件事、做每一步前說明你要做什麼。**目標是交付一個能開的網址 + 後台帳密,而非生完檔案就停。**
+Communicate in plain language, ask only one thing at a time, and explain what you're about to do before each step. **The goal is to deliver a working URL + admin credentials, not to stop once the files are generated.**
 
-## 鐵則(不可協商的順序)
+## Iron rules (a non-negotiable order)
 
-無論使用者描述了什麼功能(預約系統、行事曆、商店、作品集…),一律:
+No matter what feature the user describes (booking system, calendar, store, portfolio…), always:
 
-1. **先完成 Phase A**:拉取 template → 供裝 Cloudflare → 部署上線
-2. **才進入 Phase B**:在 template 的架構上實作使用者要的功能
+1. **Complete Phase A first**: pull the template → provision Cloudflare → deploy to production
+2. **Only then move to Phase B**: implement the features the user wants on top of the template's architecture
 
-**在 template 拉取完成之前,禁止建立任何專案檔案、禁止撰寫任何功能程式碼。**
-理由:此 template 是唯一驗證過能部署到 Cloudflare Workers 的架構;先自建再遷移,幾乎必然做出部署不了的東西。
+**Until the template has been pulled, you are forbidden to create any project files or write any feature code.**
+Reason: this template is the only architecture verified to deploy to Cloudflare Workers; building your own first and migrating later will almost certainly produce something that can't be deployed.
 
-**禁止事項:**
-- 禁止自建專案結構(`create-next-app`、手刻 HTML、其他框架)—— 只能從 template 開始
-- 禁止以 localStorage / JSON 檔 / 記憶體變數保存資料 —— 結構化資料一律 Prisma + D1
-- 禁止把上傳檔案存本地磁碟 —— 檔案一律 R2
+**Prohibited:**
+- Do not build your own project structure (`create-next-app`, hand-written HTML, other frameworks) — start only from the template
+- Do not store data in localStorage / JSON files / in-memory variables — structured data always goes through Prisma + D1
+- Do not store uploaded files on the local disk — files always go to R2
 
-**範例** — 使用者說「我想做一個讓學生預約排課的行事曆服務」:
-- ✅ 正確:記下「課程、預約」需求 → 跑完 Phase A(scaffold + 部署)→ Phase B 以 Prisma model + tRPC + 頁面實作
-- ❌ 錯誤:直接開始寫行事曆程式碼,之後才處理部署
+**Example** — the user says "I want to build a calendar service where students book class sessions":
+- ✅ Correct: note the "courses, bookings" requirement → run through Phase A (scaffold + deploy) → implement in Phase B with a Prisma model + tRPC + pages
+- ❌ Wrong: start writing calendar code right away and deal with deployment afterward
 
-唯一允許的降級:使用者的 Cloudflare 帳號尚未就緒時,可先完成 scaffold 並以 `npm run dev` 本機開發,**但仍必須從 template 開始**,並在帳號就緒後盡早補完供裝與部署。
+The only permitted downgrade: when the user's Cloudflare account isn't ready yet, you may complete the scaffold first and develop locally with `npm run dev`, **but you must still start from the template**, and complete provisioning and deployment as soon as possible once the account is ready.
 
-## Phase A|起站(scaffold → 供裝 → 部署)
+## Phase A | Standing up the site (scaffold → provision → deploy)
 
-0. **開場說明 + 帳號準備** — 白話說明:網站放在 **Cloudflare**;基本功能(網站、資料庫)在**免費額度內、不用綁卡**;只有「上傳圖片」需綁一張信用卡(仍免費額度,平台規定)。引導註冊 [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up) + `npx wrangler login`(點一次允許)。綁卡不在此強制,留到第 3 步建 R2 時再檢查。接著技術前置檢查(node/npm/git/wrangler)。見 [references/provision.md](references/provision.md)。
-1. **訪談** — 白話問:網站名稱?用途?**想要哪些功能?**(記成需求清單,Phase B 逐項實作 —— 不要現在動手)要不要上傳圖片(決定 R2 與綁卡)?管理員 email 與密碼(可代生)。固定話術:「我會先把網站的地基架好、上線(幾分鐘),再開始做你的○○功能。」
-2. **組裝** — `npx degit Ginz9013/t3-flare/template <dir>`;不要圖片上傳就 `bash scripts/remove-r2.sh`;`my-site` 全域改名;寫入 `.template-version`;`npm install`;`git init` + 首次 commit。見 [references/provision.md](references/provision.md)。
-3. **供裝 Cloudflare** — `wrangler d1 create` → 把 id 填回 `wrangler.jsonc` 的 `PLACEHOLDER_D1_DATABASE_ID`;(有 R2)建 bucket 前確認已綁卡,失敗則白話引導開通;產 `BETTER_AUTH_SECRET` → 寫入 `.env` + 首次部署後 `wrangler secret put`。見 [references/provision.md](references/provision.md)。
-4. **資料庫 + 管理員** — `npm run cf:migrate`;`gen-admin-sql.ts` 產 SQL → `wrangler d1 execute --remote --file`;網址與帳密寫進 `ADMIN.md`(已 gitignore)。見 [references/provision.md](references/provision.md)。
-5. **部署** — `npm run cf:deploy` → 取得 `https://<name>.<subdomain>.workers.dev`。見 [references/deploy.md](references/deploy.md)。
-6. **驗證與交付** — curl 首頁 200、實際登入後台;失敗則 `wrangler tail` 診斷修復。給使用者:網站網址、後台網址(`/admin`)、`ADMIN.md` 位置。見 [references/deploy.md](references/deploy.md)。
+0. **Opening explanation + account setup** — In plain language explain: the website is hosted on **Cloudflare**; the basic features (website, database) fall **within the free tier and require no card**; only "image uploads" requires adding one credit card (still within the free tier, a platform requirement). Guide the user to register at [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up) + `npx wrangler login` (click Allow once). Adding a card is not enforced here; defer that check to step 3 when creating R2. Then run the technical prerequisite checks (node/npm/git/wrangler). See [references/provision.md](references/provision.md).
+1. **Interview** — In plain language ask: website name? Purpose? **Which features do you want?** (Record these as a requirements list to implement one by one in Phase B — don't start now.) Do you want image uploads (determines R2 and the card)? Admin email and password (can be generated for them). A fixed line to use: "I'll first lay the foundation and get the site live (a few minutes), then start building your ○○ feature."
+2. **Assembly** — `npx degit Ginz9013/t3-flare/template <dir>`; if no image uploads, run `bash scripts/remove-r2.sh`; rename `my-site` globally; write `.template-version`; `npm install`; `git init` + initial commit. See [references/provision.md](references/provision.md).
+3. **Provision Cloudflare** — `wrangler d1 create` → fill the id back into `PLACEHOLDER_D1_DATABASE_ID` in `wrangler.jsonc`; (if R2) confirm a card has been added before creating the bucket, and if it fails, guide the user through enabling it in plain language; generate `BETTER_AUTH_SECRET` → write it to `.env` + `wrangler secret put` after the first deploy. See [references/provision.md](references/provision.md).
+4. **Database + admin** — `npm run cf:migrate`; `gen-admin-sql.ts` generates SQL → `wrangler d1 execute --remote --file`; write the URL and credentials into `ADMIN.md` (already gitignored). See [references/provision.md](references/provision.md).
+5. **Deploy** — `npm run cf:deploy` → obtain `https://<name>.<subdomain>.workers.dev`. See [references/deploy.md](references/deploy.md).
+6. **Verify and deliver** — curl the homepage for 200, actually log into the admin dashboard; if it fails, diagnose and fix with `wrangler tail`. Give the user: the website URL, the admin URL (`/admin`), and the location of `ADMIN.md`. See [references/deploy.md](references/deploy.md).
 
-## Phase B|功能實作(在 template 軌道上)
+## Phase B | Feature implementation (on the template's rails)
 
-Phase A 驗證通過後,依訪談的需求清單**逐項**實作。每一項都走同一條軌道:**Prisma model → 遷移(雙軌)→ tRPC router → 頁面 → 本機預覽 → 使用者點頭 → 部署** —— 完整步驟與資料存放規則見 [references/build-features.md](references/build-features.md)。
+After Phase A passes verification, implement the interview's requirements list **one item at a time**. Every item runs the same rails: **Prisma model → migration (dual-track) → tRPC router → pages → local preview → user sign-off → deploy** — for the complete steps and data-storage rules see [references/build-features.md](references/build-features.md).
 
-- 部落格 / 文章需求 → 直接使用現成的 **add-blog** skill(`skills/add-blog/`),不要重造。
-- 日常維護(改文案、重設密碼、備份、自訂網域)→ 見 [references/maintain.md](references/maintain.md)。
+- Blog / article requirements → use the ready-made **add-blog** skill (`skills/add-blog/`) directly; don't reinvent it.
+- Routine maintenance (editing copy, resetting passwords, backups, custom domains) → see [references/maintain.md](references/maintain.md).
 
-## 非適用情境
+## Non-applicable scenarios
 
-- **既有專案的部署**:本工具僅支援「從 template 建立新站」。使用者若有現成專案想部署到 Cloudflare,白話說明此工具不適用,勿嘗試把 template 架構硬套到既有程式碼上。
-- 用 site-builder 建立的專案不在此限 —— 那是日常維護(maintain.md)。
+- **Deploying an existing project**: this tool only supports "creating a new site from the template." If the user has an existing project they want to deploy to Cloudflare, explain in plain language that this tool doesn't apply, and don't try to force the template's architecture onto existing code.
+- Projects created with site-builder are excluded from this limitation — those are routine maintenance (maintain.md).
 
-## 護欄(務必遵守)
+## Guardrails (must be followed)
 
-- **破壞性 D1 操作前先備份**:改 schema、刪資料前先 `wrangler d1 export <name> --remote --output backup.sql`。D1 沒有好用的 rollback,使用者不會救資料。
-- **改動前先 commit**:git 可用時,每個里程碑與每次「使用者請求的修改」前自動 commit(白話說「我先存個檔」,不對使用者提 git)。git 未裝則主動提議代裝,拒絕就繼續走,僅在高風險修改前警告「這次沒有後悔藥」。
-- **費用透明**:預設走免費額度與 `workers.dev` 子網域;R2 需綁卡、Workers Paid 有門檻 —— 在訪談階段講清楚。
-- **機密不外洩**:`BETTER_AUTH_SECRET`、密碼等不要複述在對話裡;帳密只落在 `ADMIN.md`。
-- **預覽再上線**:修改預設先 `npm run dev` 本機預覽,使用者點頭才部署;明說「直接上」才跳過。
+- **Back up before destructive D1 operations**: before changing the schema or deleting data, run `wrangler d1 export <name> --remote --output backup.sql` first. D1 has no convenient rollback, and the user won't be able to recover the data.
+- **Commit before making changes**: when git is available, automatically commit before each milestone and before every "user-requested change" (say "let me save a checkpoint" in plain language; don't bring up git with the user). If git isn't installed, proactively offer to install it for them; if declined, carry on, warning only before high-risk changes that "there's no undo this time."
+- **Cost transparency**: default to the free tier and the `workers.dev` subdomain; R2 requires a card and Workers Paid has a threshold — make this clear during the interview.
+- **Don't leak secrets**: don't repeat `BETTER_AUTH_SECRET`, passwords, and the like in the conversation; credentials live only in `ADMIN.md`.
+- **Preview before going live**: by default preview changes locally with `npm run dev` first, and only deploy after the user signs off; skip only when they explicitly say "just ship it."
 
-## 關鍵事實(易錯處)
+## Key facts (common pitfalls)
 
-- `BETTER_AUTH_SECRET` 是 **build 時(`.env`)與 runtime(`wrangler secret put`)都要**:`next build` 在 production 會驗證 env,少了 `.env` 會 build 失敗。
-- 正式 D1 **跑不了 node seed**;管理員一律用 `gen-admin-sql.ts` 產 SQL + `wrangler d1 execute --remote` 套用。
-- `database_id` 起始是 `PLACEHOLDER_D1_DATABASE_ID`,**務必**用 `wrangler d1 create` 回傳的真實 id 取代,否則部署連不到 DB。
-- 使用 `Ginz9013/t3-flare/template` 的 **main** 版;裁切邏輯讀專案內的 `modules.md`,不要硬記。
+- `BETTER_AUTH_SECRET` is needed **both at build time (`.env`) and at runtime (`wrangler secret put`)**: `next build` validates env in production, so a missing `.env` will fail the build.
+- Production D1 **can't run a node seed**; always create the admin with `gen-admin-sql.ts`-generated SQL + `wrangler d1 execute --remote`.
+- `database_id` starts as `PLACEHOLDER_D1_DATABASE_ID`, and you **must** replace it with the real id returned by `wrangler d1 create`, or the deployment won't connect to the DB.
+- Use the **main** version of `Ginz9013/t3-flare/template`; read the trimming logic from the project's `modules.md`, don't hard-code it from memory.

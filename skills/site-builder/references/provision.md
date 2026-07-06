@@ -1,124 +1,124 @@
-# provision — 開場、前置檢查、訪談、組裝、Cloudflare 供裝
+# provision — opening, prerequisite checks, interview, assembly, Cloudflare provisioning
 
-## 0. 開場說明 + 帳號準備
+## 0. Opening explanation + account setup
 
-### 先用白話開場(對非工程使用者,一開始就講清楚,別跳進技術指令)
+### Start with plain language (for non-engineer users, make this clear up front; don't jump into technical commands)
 
-參考講法:
+A suggested way to phrase it:
 
-> 我會用一個叫 **Cloudflare** 的平台,幫你把網站放到網路上、還附一個可以自己改內容的後台。
-> 費用上:網站本身和資料庫都在**免費額度**內,不用付錢也不用綁卡。
-> 只有一個例外 —— 如果你要「**上傳圖片**」的功能,Cloudflare 規定那部分要在後台**綁一張信用卡**(一樣是免費額度,只是平台要求要有卡)。這個等下我會問你要不要。
-> 你只要做一件事:**去 Cloudflare 註冊一個免費帳號**,然後我帶你授權一次,剩下全部我來。
+> I'll use a platform called **Cloudflare** to put your website online, along with an admin dashboard where you can edit the content yourself.
+> On cost: the website itself and the database are both within the **free tier** — no payment and no card required.
+> There's just one exception — if you want the "**image upload**" feature, Cloudflare requires you to **add a credit card** in the dashboard for that part (still the free tier, the platform just requires a card on file). I'll ask you about this in a bit.
+> You only need to do one thing: **register a free account on Cloudflare**, and then I'll walk you through authorizing once — I'll handle everything else.
 
-### 帳號與登入
+### Account and login
 
-1. 請使用者到 **https://dash.cloudflare.com/sign-up** 註冊免費帳號(email + 密碼即可,不需綁卡)。
-2. 授權 wrangler 使用該帳號:
+1. Have the user register a free account at **https://dash.cloudflare.com/sign-up** (email + password is enough, no card needed).
+2. Authorize wrangler to use that account:
    ```bash
-   npx wrangler login   # 會開瀏覽器,請使用者點「Allow」。這是他唯一要親自做的技術動作。
+   npx wrangler login   # opens the browser; have the user click "Allow". This is the only technical action they need to do themselves.
    ```
-3. 確認登入成功:`npx wrangler whoami`。
+3. Confirm login succeeded: `npx wrangler whoami`.
 
-### 費用與綁卡時機(重要)
+### Cost and when the card is needed (important)
 
-- **不用綁卡就能用**:Cloudflare 帳號、Workers(網站)、D1(資料庫)、`workers.dev` 子網域。
-- **需要綁卡**:R2(圖片上傳)——Cloudflare 規定啟用 R2 要有付款方式,即使用免費額度亦然。
-- 綁卡**不在開場強制**;等第 3 步、使用者確定要圖片上傳、真的要建 R2 時再檢查(見該步)。自訂網域另需網域已在 Cloudflare 管理。
+- **Usable without a card**: Cloudflare account, Workers (the website), D1 (the database), and the `workers.dev` subdomain.
+- **Requires a card**: R2 (image uploads) — Cloudflare requires a payment method to enable R2, even when using the free tier.
+- Adding a card is **not enforced at the opening**; check for it later at step 3, once the user has confirmed they want image uploads and R2 is actually being created (see that step). A custom domain additionally requires the domain to already be managed on Cloudflare.
 
-### 技術前置檢查
+### Technical prerequisite checks
 
 ```bash
-node -v            # 需要 20+
+node -v            # requires 20+
 npm -v
-git --version      # 沒有 → 提議代裝：macOS `brew install git`、Windows `winget install Git.Git`
+git --version      # missing → offer to install: macOS `brew install git`, Windows `winget install Git.Git`
 npx wrangler --version
 ```
-`wrangler` 用 `npx wrangler`(專案已含 dev 依賴,不必全域安裝)。
+Use `npx wrangler` for `wrangler` (the project already includes it as a dev dependency, no global install needed).
 
-## 1. 訪談(白話,一次一題)
+## 1. Interview (plain language, one question at a time)
 
-| 問使用者 | 對應到 |
+| Ask the user | Maps to |
 |---|---|
-| 網站要叫什麼名字? | 專案名 / D1 名 / R2 名 / Worker 名(轉小寫+連字號,如「小明的店」→ `xiaoming-store`) |
-| 這個網站是做什麼的? | 首頁文案 |
-| 要不要能上傳圖片 / 相簿? | 否 → 移除 R2 模組 |
-| 想用什麼 email 和密碼登入後台? | 管理員帳號(密碼可代生強密碼) |
+| What should the website be called? | Project name / D1 name / R2 name / Worker name (lowercased + hyphenated, e.g. "Xiaoming's Store" → `xiaoming-store`) |
+| What is this website for? | Homepage copy |
+| Do you want to be able to upload images / photo albums? | No → remove the R2 module |
+| What email and password do you want to log into the admin dashboard with? | Admin account (a strong password can be generated for them) |
 
-命名限制:D1/R2/Worker 名只能小寫英數與連字號。取一個 slug(如 `xiaoming-store`)全程共用。
+Naming constraints: D1/R2/Worker names may only use lowercase letters, digits, and hyphens. Pick one slug (e.g. `xiaoming-store`) and reuse it throughout.
 
-## 2. 組裝
+## 2. Assembly
 
 ```bash
 npx degit Ginz9013/t3-flare/template <slug>
 cd <slug>
 ```
 
-- **不要圖片上傳**:`bash scripts/remove-r2.sh`(內容見專案 `modules.md`)。
-- **全域改名** `my-site` → `<slug>`。出現位置:`package.json`(name 與 `cf:migrate`/`cf:deploy` 內的 D1 名)、`wrangler.jsonc`(`name`/`database_name`/`bucket_name`)、`src/app/layout.tsx`(metadata)、`src/app/page.tsx`、`src/app/admin/**`(側欄/登入標題)、`README.md`。可用:
+- **No image uploads**: `bash scripts/remove-r2.sh` (see the project's `modules.md` for what it does).
+- **Rename globally** `my-site` → `<slug>`. Where it appears: `package.json` (the name and the D1 names inside `cf:migrate`/`cf:deploy`), `wrangler.jsonc` (`name`/`database_name`/`bucket_name`), `src/app/layout.tsx` (metadata), `src/app/page.tsx`, `src/app/admin/**` (sidebar/login titles), `README.md`. You can use:
   ```bash
   grep -rl "my-site" . --exclude-dir=node_modules | xargs sed -i '' 's/my-site/<slug>/g'   # macOS
-  # Linux CI/容器用 sed -i(無 '')
+  # On Linux CI/containers use sed -i (without '')
   ```
-- **記錄基準版本**(供日後手術參考):
+- **Record the baseline version** (for future surgical reference):
   ```bash
   git ls-remote https://github.com/Ginz9013/t3-flare main | cut -f1 > .template-version
   ```
-- 安裝與初始化版控:
+- Install and initialize version control:
   ```bash
   npm install
-  git init -q && git add -A && git commit -q -m "initial: scaffold from t3-flare"   # git 可用時
+  git init -q && git add -A && git commit -q -m "initial: scaffold from t3-flare"   # when git is available
   ```
 
-## 3. 供裝 Cloudflare
+## 3. Provision Cloudflare
 
 ```bash
-# D1：建立資料庫，從輸出取得 database_id
+# D1: create the database, get the database_id from the output
 npx wrangler d1 create <slug>
 ```
-輸出會包含一段 `database_id = "xxxxxxxx-xxxx-..."`。**用這個 UUID 取代 `wrangler.jsonc` 裡的 `PLACEHOLDER_D1_DATABASE_ID`**(用 Edit 精準替換)。少了這步部署會連不到 DB。
+The output includes a line like `database_id = "xxxxxxxx-xxxx-..."`. **Replace `PLACEHOLDER_D1_DATABASE_ID` in `wrangler.jsonc` with this UUID** (use Edit for a precise replacement). Skipping this step means the deployment can't connect to the DB.
 
 ```bash
-# R2（若保留了圖片上傳）—— 建 bucket 前的綁卡檢查點
+# R2 (if image uploads were kept) — the card checkpoint before creating the bucket
 npx wrangler r2 bucket create <slug>
 ```
-若這步失敗、訊息提到 R2 未啟用 / 需要付款方式(未綁卡),**用白話請使用者處理**:
-> 「圖片上傳這個功能需要先在 Cloudflare 開通並綁一張卡(仍是免費額度)。請到 Cloudflare 後台 → R2,點開通並填一張信用卡,弄好跟我說,我繼續。」
+If this step fails with a message about R2 not being enabled / a payment method being required (no card added), **ask the user to handle it in plain language**:
+> "The image upload feature needs to be enabled on Cloudflare first, with a card on file (still the free tier). Please go to the Cloudflare dashboard → R2, click to enable it and enter a credit card, then let me know and I'll continue."
 
-開通綁卡後重跑 `wrangler r2 bucket create <slug>` 即可。若使用者不想綁卡 → 改成不要圖片上傳,回第 2 步跑 `bash scripts/remove-r2.sh` 後繼續。
+Once the card is added, just re-run `wrangler r2 bucket create <slug>`. If the user doesn't want to add a card → switch to no image uploads, go back to step 2, run `bash scripts/remove-r2.sh`, and continue.
 
 ```bash
-# BETTER_AUTH_SECRET：build 時與 runtime 都需要
+# BETTER_AUTH_SECRET: needed both at build time and at runtime
 SECRET=$(openssl rand -base64 32)
 ```
-把 secret 寫進兩處:
-- `.env`(build 時 `next build` 在 production 會驗證 env,少了會 build 失敗):
-  `BETTER_AUTH_SECRET="<SECRET>"` 與 `BETTER_AUTH_URL="http://localhost:3000"`(先用本機值,部署後再視需要更新)。
-- runtime secret 在**首次部署後**設定(見 deploy.md,`wrangler secret put` 需要 worker 已存在)。
-- 也可寫 `.dev.vars`(本機預覽用):`BETTER_AUTH_SECRET="<SECRET>"`。
+Write the secret in two places:
+- `.env` (at build time, `next build` validates env in production, and a missing value fails the build):
+  `BETTER_AUTH_SECRET="<SECRET>"` and `BETTER_AUTH_URL="http://localhost:3000"` (use the local value for now; update it after deploy if needed).
+- The runtime secret is set **after the first deploy** (see deploy.md; `wrangler secret put` requires the worker to already exist).
+- You can also write `.dev.vars` (for local preview): `BETTER_AUTH_SECRET="<SECRET>"`.
 
-> 別把 `<SECRET>` 明文貼進對話。
+> Don't paste `<SECRET>` in plaintext into the conversation.
 
-## 4. 資料庫 migration + 管理員
+## 4. Database migration + admin
 
 ```bash
-# 套用 D1 schema
+# Apply the D1 schema
 npm run cf:migrate     # = wrangler d1 migrations apply <slug> --remote
 
-# 產生管理員 seed SQL（密碼以 better-auth 雜湊；正式 D1 跑不了 node seed）
-ADMIN_EMAIL="使用者的email" ADMIN_PASSWORD="使用者的密碼" ADMIN_NAME="Admin" \
+# Generate the admin seed SQL (password hashed with better-auth; production D1 can't run a node seed)
+ADMIN_EMAIL="user's email" ADMIN_PASSWORD="user's password" ADMIN_NAME="Admin" \
   npx tsx scripts/gen-admin-sql.ts > admin.sql
 npx wrangler d1 execute <slug> --remote --file=admin.sql
-rm -f admin.sql        # 含密碼 hash,套用後即刪
+rm -f admin.sql        # contains the password hash; delete it right after applying
 ```
 
-寫 `ADMIN.md`(專案根,已 gitignore)交付給使用者:
+Write `ADMIN.md` (at the project root, already gitignored) to deliver to the user:
 ```md
-# 你的網站
-- 網站網址：https://<slug>.<subdomain>.workers.dev   （部署後填入實際網址）
-- 後台網址：（上面網址）/admin
-- 登入 email：...
-- 登入密碼：...
+# Your website
+- Website URL: https://<slug>.<subdomain>.workers.dev   (fill in the actual URL after deploy)
+- Admin URL: (the URL above)/admin
+- Login email: ...
+- Login password: ...
 ```
 
-接著進行部署 → 見 [deploy.md](deploy.md)。
+Then proceed to deployment → see [deploy.md](deploy.md).

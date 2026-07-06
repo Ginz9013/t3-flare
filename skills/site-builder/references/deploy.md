@@ -1,6 +1,6 @@
-# deploy — 部署、設定 runtime secret、驗證、除錯
+# deploy — deployment, setting the runtime secret, verification, debugging
 
-## 5. 部署
+## 5. Deploy
 
 ```bash
 npm run cf:deploy
@@ -9,56 +9,56 @@ npm run cf:deploy
 #   && opennextjs-cloudflare deploy
 ```
 
-- build 會讀 `.env` 驗證環境變數 —— 確認 `BETTER_AUTH_SECRET` 已在 `.env`(見 provision.md 第 3 步),否則 build 會失敗。
-- 部署成功後輸出會有網址:`https://<slug>.<subdomain>.workers.dev`。記下它,回填 `ADMIN.md`。
+- The build reads `.env` to validate environment variables — confirm `BETTER_AUTH_SECRET` is in `.env` (see provision.md step 3), otherwise the build will fail.
+- After a successful deploy, the output includes the URL: `https://<slug>.<subdomain>.workers.dev`. Note it down and fill it back into `ADMIN.md`.
 
-### 設定 runtime secret(首次部署後)
+### Set the runtime secret (after the first deploy)
 
-`wrangler secret put` 需要 worker 已存在,故在**第一次 `cf:deploy` 之後**執行:
+`wrangler secret put` requires the worker to already exist, so run it **after the first `cf:deploy`**:
 
 ```bash
 printf '%s' "$SECRET" | npx wrangler secret put BETTER_AUTH_SECRET
 ```
 
-設 secret 不需要重新部署即生效。若不確定 `$SECRET` 還在,重新產生一組並同步更新 `.env` 後再 `secret put`。
+Setting the secret takes effect without a redeploy. If you're not sure `$SECRET` is still set, generate a new one, update `.env` to match, and then `secret put`.
 
-### 瀏覽器登入的 origin(template 已內建處理)
+### The origin for browser login (handled by the template out of the box)
 
-better-auth 會擋掉來源不在信任清單的登入請求(CSRF 保護)。template 的 better-auth config 已設 `trustedOrigins` 為「動態信任請求自身來源」,因此**首次部署即可從瀏覽器登入,不需要知道或回填 workers.dev 網址、也不需要第二次部署**。
+better-auth blocks login requests whose origin isn't on the trusted list (CSRF protection). The template's better-auth config already sets `trustedOrigins` to "dynamically trust the request's own origin," so **you can log in from the browser right after the first deploy — no need to know or fill in the workers.dev URL, and no second deploy needed**.
 
-`BETTER_AUTH_URL` 因此非必需;僅在你要一個「正式對外網址」用於產生連結時,才於 `wrangler.jsonc` 加 `"vars": { "BETTER_AUTH_URL": "https://<你的網址>" }` 並重新部署。
+`BETTER_AUTH_URL` is therefore not required; only when you want a "canonical public URL" for generating links should you add `"vars": { "BETTER_AUTH_URL": "https://<your-url>" }` to `wrangler.jsonc` and redeploy.
 
-## 6. 驗證(做到「真的能開」才算完成)
-
-```bash
-curl -s -o /dev/null -w "%{http_code}\n" https://<slug>.<subdomain>.workers.dev   # 期望 200
-```
-
-- 開 `/admin/login`,用 `ADMIN.md` 的帳密**實際登入一次**,確認能進後台、能新增一筆 Post。
-- (有 R2)在後台「媒體」頁上傳一張圖,確認顯示。
-
-### 失敗時的診斷
+## 6. Verify (done means "it actually opens")
 
 ```bash
-npx wrangler tail <slug>     # 即時看 Worker log,另開一個請求觸發
+curl -s -o /dev/null -w "%{http_code}\n" https://<slug>.<subdomain>.workers.dev   # expect 200
 ```
 
-常見問題:
+- Open `/admin/login`, **actually log in once** with the credentials from `ADMIN.md`, and confirm you can enter the dashboard and add a Post.
+- (If R2) On the "Media" page in the dashboard, upload an image and confirm it displays.
 
-| 症狀 | 可能原因 | 處理 |
+### Diagnosing failures
+
+```bash
+npx wrangler tail <slug>     # watch the Worker log live; trigger a request in another tab
+```
+
+Common issues:
+
+| Symptom | Possible cause | Fix |
 |---|---|---|
-| 500 / 首頁打不開 | `database_id` 還是 placeholder | 用 `wrangler d1 create` 的真實 id 取代後重部署 |
-| 登入後又被踢回 | runtime `BETTER_AUTH_SECRET` 未設 | `wrangler secret put BETTER_AUTH_SECRET` |
-| 登入回 403 `Invalid origin` | 專案的 better-auth config 缺動態 `trustedOrigins`(舊版 scaffold) | 補上 config.ts 的 `trustedOrigins`(見 template)後重部署 |
-| 登入說帳密錯 | admin seed SQL 沒套用成功 | 重跑 gen-admin-sql + `d1 execute --remote` |
-| build 失敗說缺 env | `.env` 沒有 `BETTER_AUTH_SECRET` | 補進 `.env` 再 `cf:deploy` |
-| 圖片上傳 500 | R2 bucket 未建 / binding 名不符 | `wrangler r2 bucket create <slug>`,對照 `wrangler.jsonc` |
+| 500 / homepage won't open | `database_id` is still the placeholder | Replace it with the real id from `wrangler d1 create` and redeploy |
+| Kicked back out after login | runtime `BETTER_AUTH_SECRET` not set | `wrangler secret put BETTER_AUTH_SECRET` |
+| Login returns 403 `Invalid origin` | the project's better-auth config lacks the dynamic `trustedOrigins` (older scaffold) | add `trustedOrigins` to config.ts (see the template) and redeploy |
+| Login says credentials are wrong | the admin seed SQL wasn't applied successfully | re-run gen-admin-sql + `d1 execute --remote` |
+| Build fails saying env is missing | `.env` lacks `BETTER_AUTH_SECRET` | add it to `.env` then `cf:deploy` |
+| Image upload 500 | R2 bucket not created / binding name mismatch | `wrangler r2 bucket create <slug>`, cross-check `wrangler.jsonc` |
 
-## 7. 交付
+## 7. Handoff
 
-給使用者(白話):
-- 「你的網站上線了:`https://<slug>.<subdomain>.workers.dev`」
-- 「後台在 網址/admin,帳號密碼我存在專案的 `ADMIN.md` 裡了」
-- 「之後想改任何東西,直接跟我說就好」
+Tell the user (in plain language):
+- "Your website is live: `https://<slug>.<subdomain>.workers.dev`"
+- "The dashboard is at URL/admin; I've saved the username and password in the project's `ADMIN.md`"
+- "Whenever you want to change anything later, just tell me"
 
-日常維護 → 見 [maintain.md](maintain.md)。
+Routine maintenance → see [maintain.md](maintain.md).

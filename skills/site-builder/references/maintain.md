@@ -1,57 +1,57 @@
-# maintain — 日常維護
+# maintain — routine maintenance
 
-專案 scaffold 後,使用者會回來說「幫我改文案」「加一頁」「換照片」。這些都在**已存在的專案目錄**內操作。
+After the project is scaffolded, the user will come back saying "help me change the copy," "add a page," "swap out a photo." These all operate inside the **existing project directory**.
 
-## 通則
+## General rules
 
-- 動手前先 commit(git 可用時):`git add -A && git commit -m "before: <要做的事>"`。壞了用 `git reset --hard HEAD~1` 還原。對使用者只說「我先存個檔」。
-- 預設先本機預覽,使用者點頭才上線。使用者明說「直接上」才跳過預覽。
+- Commit before making changes (when git is available): `git add -A && git commit -m "before: <what you're about to do>"`. If it breaks, restore with `git reset --hard HEAD~1`. To the user just say "let me save a checkpoint."
+- Preview locally by default, and only go live after the user signs off. Skip the preview only when the user explicitly says "just ship it."
 
-## 預覽 → 上線
+## Preview → go live
 
 ```bash
-npm run dev          # http://localhost:3000（用本機 SQLite,雙模式 getDb 自動切換）
+npm run dev          # http://localhost:3000 (uses local SQLite; the dual-mode getDb switches automatically)
 ```
-- 請使用者開 `localhost:3000` 看效果。話術固定:「這是預覽版,你在後台輸入的正式內容要到線上網址操作」(本機與線上 D1 是兩份資料)。
-- 滿意後上線:`npm run cf:deploy`。
+- Have the user open `localhost:3000` to see the result. A fixed line to use: "This is the preview version; the real content you enter in the dashboard needs to be done on the live URL" (local and live D1 are two separate copies of data).
+- Once satisfied, go live: `npm run cf:deploy`.
 
-## 改內容 / 加功能
+## Changing content / adding features
 
-- 純文案:改對應的 `page.tsx` / 元件,預覽後部署。
-- 加新功能或新的內容類型(含 schema 變更、新 router、新頁面):一律走
-  [build-features.md](build-features.md) 的軌道(model → 雙軌遷移 → tRPC → 頁面 → 預覽 → 部署),
-  遷移前**先備份**(見下)。部落格/文章需求用現成的 `skills/add-blog/`。
+- Pure copy: edit the corresponding `page.tsx` / component, preview, then deploy.
+- Adding a new feature or a new content type (including schema changes, a new router, a new page): always follow
+  the rails in [build-features.md](build-features.md) (model → dual-track migration → tRPC → page → preview → deploy),
+  and **back up first** before migrating (see below). For blog/article needs, use the ready-made `skills/add-blog/`.
 
-## 重設管理員密碼
+## Resetting the admin password
 
 ```bash
-ADMIN_EMAIL="同一個email" ADMIN_PASSWORD="新密碼" npx tsx scripts/gen-admin-sql.ts > admin.sql
+ADMIN_EMAIL="the same email" ADMIN_PASSWORD="new password" npx tsx scripts/gen-admin-sql.ts > admin.sql
 npx wrangler d1 execute <slug> --remote --file=admin.sql && rm -f admin.sql
 ```
-SQL 是 DELETE+INSERT credential,會覆蓋舊密碼。更新 `ADMIN.md`。
+The SQL does a DELETE+INSERT on the credential, overwriting the old password. Update `ADMIN.md`.
 
-## 備份(破壞性操作前必做)
+## Backup (mandatory before destructive operations)
 
 ```bash
 npx wrangler d1 export <slug> --remote --output backup-$(date +%Y%m%d).sql
 ```
-改 schema、刪資料、跑不確定的 migration 前都先備份。D1 沒有好用的 rollback。
+Back up before changing the schema, deleting data, or running an uncertain migration. D1 has no convenient rollback.
 
-## (選配)自訂網域
+## (Optional) Custom domain
 
-需使用者的網域已在 Cloudflare 管理(DNS onboarding)。於 `wrangler.jsonc` 加:
+Requires the user's domain to already be managed on Cloudflare (DNS onboarding). Add to `wrangler.jsonc`:
 ```jsonc
 "routes": [{ "pattern": "example.com", "custom_domain": true }]
 ```
-並把 `BETTER_AUTH_URL` 更新為該網域,重新 `cf:deploy`。
+Then update `BETTER_AUTH_URL` to that domain and re-run `cf:deploy`.
 
-## 砍掉重練 / 移除整個站
+## Tearing down / removing the whole site
 
-要完全移除一個站(釋放 Cloudflare 資源),使用專屬的 **delete-site** skill(`skills/delete-site/`)——
-它涵蓋盤點資源、明確確認、選擇性備份、逐一刪除 Worker/D1/R2、以及非空 R2 的處理。
+To completely remove a site (freeing up Cloudflare resources), use the dedicated **delete-site** skill (`skills/delete-site/`) —
+it covers inventorying resources, explicit confirmation, optional backup, deleting the Worker/D1/R2 one by one, and handling non-empty R2 buckets.
 
-若只是要用同名重建:先用 delete-site 刪掉資源,再重跑 site-builder 的供裝流程。
+If you just want to rebuild under the same name: use delete-site to remove the resources first, then re-run site-builder's provisioning flow.
 
-## 升級語義
+## Upgrade semantics
 
-專案是 scaffold 當下的**快照**,template 之後的改良不自動套用。`.template-version` 記錄了基準 commit。遇到必須修的重大問題(如 OpenNext breaking change),以「針對這個專案的一次性手術」處理,不建立自動升級機制。
+The project is a **snapshot** taken at scaffold time; improvements made to the template afterward are not applied automatically. `.template-version` records the baseline commit. When you hit a critical issue that must be fixed (e.g. an OpenNext breaking change), handle it as "a one-off surgery for this specific project" rather than building an automatic upgrade mechanism.

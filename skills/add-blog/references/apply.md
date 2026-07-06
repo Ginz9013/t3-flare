@@ -1,101 +1,101 @@
-# apply — add-blog 套用細節
+# apply — add-blog application details
 
-以下 `$SKILL` 指本 skill 目錄、`$PROJ` 指使用者的 t3-flare 專案根。
+Below, `$SKILL` refers to this skill's directory and `$PROJ` to the user's t3-flare project root.
 
-## 1. 複製檔案
+## 1. Copy files
 
 ```bash
 cp -R "$SKILL/files/src/." "$PROJ/src/"
-npm run check:write   # 讓複製進來的檔案對齊專案的 biome 格式
+npm run check:write   # align the copied-in files with the project's biome formatting
 ```
-複製後專案會多出:
-- `src/lib/{slug,lowlight,tiptap-extensions,tiptap-content}.ts`、`src/lib/render-article.tsx`
+After copying, the project gains:
+- `src/lib/{slug,lowlight,tiptap-extensions,tiptap-content}.ts` and `src/lib/render-article.tsx`
 - `src/server/api/routers/article.ts`
-- `src/app/admin/(dashboard)/articles/**`(list / new / [id] / _components）
-- `src/app/articles/**`(list / [slug] / _components）
+- `src/app/admin/(dashboard)/articles/**` (list / new / [id] / _components)
+- `src/app/articles/**` (list / [slug] / _components)
 
-> `files/fragments/**` 不是複製檔,是要**合併**進既有檔案(見下)。
+> `files/fragments/**` are not copy files — they must be **merged** into existing files (see below).
 
 ## 2. Prisma schema
 
-把 `files/fragments/article.prisma` 的 `Article` model 追加到 `prisma/schema.prisma` 尾端;並在既有 `model User { ... }` 內加一行:
+Append the `Article` model from `files/fragments/article.prisma` to the end of `prisma/schema.prisma`, and add one line inside the existing `model User { ... }`:
 ```prisma
   articles      Article[]
 ```
-（Prisma 關聯需雙向宣告,少了這行 `prisma generate` 會報錯。）
+(Prisma relations must be declared on both sides; without this line, `prisma generate` will error.)
 
-## 3. 註冊 router（src/server/api/root.ts）
+## 3. Register the router (src/server/api/root.ts)
 
 ```ts
 import { articleRouter } from "~/server/api/routers/article";
 // ...
 export const appRouter = createTRPCRouter({
   post: postRouter,
-  article: articleRouter, // ← 新增
+  article: articleRouter, // ← added
 });
 ```
 
-## 4. 後台導覽（app-sidebar.tsx）
+## 4. Admin navigation (app-sidebar.tsx)
 
-在 `navItems` 陣列加一項(擺在 Posts 之後即可),並確認有從 `lucide-react` 匯入用到的 icon（例如 `Newspaper`）:
+Add one item to the `navItems` array (placing it right after Posts is fine), and make sure the icon you use (for example `Newspaper`) is imported from `lucide-react`:
 ```ts
-{ title: "文章", href: "/admin/articles", icon: Newspaper },
+{ title: "Articles", href: "/admin/articles", icon: Newspaper },
 ```
 
-## 5. 樣式（globals.css）
+## 5. Styles (globals.css)
 
 ```bash
 cat "$SKILL/files/fragments/prose-article.css" >> "$PROJ/src/styles/globals.css"
 ```
 
-## 6. 依賴
+## 6. Dependencies
 
-於 `$PROJ` 加入(版本對齊 template 的 React 19 / Next 15 生態):
+In `$PROJ`, add these (versions aligned with the template's React 19 / Next 15 ecosystem):
 ```bash
 npm install \
   @tiptap/react@^3.27.1 @tiptap/pm@^3.27.1 @tiptap/starter-kit@^3.27.1 \
   @tiptap/extension-image@^3.27.1 @tiptap/extension-code-block-lowlight@^3.27.1 \
   lowlight@^3.3.0 highlight.js@^11.10.0
 ```
-（`@tiptap/html` 非必需 —— 前台走 `render-article`,不用 tiptap 的 html 產生器。）
+(`@tiptap/html` is not required — the public site uses `render-article`, not tiptap's HTML generator.)
 
-安裝後**務必顯式重生 Prisma client**(讓型別含 `article`;不要只依賴 postinstall,實測有時序問題):
+After installing, **be sure to explicitly regenerate the Prisma client** (so the types include `article`; don't rely on postinstall alone — in practice there can be timing issues):
 ```bash
 npx prisma generate
 ```
 
-## 7. 遷移（本機 + D1）
+## 7. Migration (local + D1)
 
 ```bash
-# 本機:產生並套用新 migration（會建 prisma/migrations/<ts>_add_article/）
+# Local: generate and apply the new migration (creates prisma/migrations/<ts>_add_article/)
 npx prisma migrate dev --name add_article
 
-# 取剛產生的 migration SQL，複製成下一個 D1 遷移檔（編號接續既有的 d1-migrations）
+# Take the migration SQL just generated and copy it as the next D1 migration file (numbering continues from the existing d1-migrations)
 LATEST=$(ls -dt prisma/migrations/*_add_article 2>/dev/null | head -1)
 NEXT=$(printf "%04d" $(( $(ls prisma/d1-migrations/*.sql | wc -l) + 1 )))
 cp "$LATEST/migration.sql" "prisma/d1-migrations/${NEXT}_add_article.sql"
 
-# 備份後套用到 remote D1
+# Back up, then apply to the remote D1
 npx wrangler d1 export <slug> --remote --output "backup-before-article.sql"
 npm run cf:migrate
 ```
 
-`prisma generate` 會在 `npm install` 的 postinstall 重跑,產生含 `article` 的 client;若沒有,手動 `npx prisma generate`。
+`prisma generate` reruns in `npm install`'s postinstall, producing a client that includes `article`; if it doesn't, run `npx prisma generate` manually.
 
-## 8. 部署 + 驗證
+## 8. Deploy + verify
 
 ```bash
 npm run cf:deploy
 ```
-- 開 `/admin/articles` → 新增文章 → 打字 + 插入一段程式碼區塊(選語言)→ 開「發佈」→ 建立。
-- 開 `/articles` 應看到該篇;點進 `/articles/<slug>` 應看到內文與**程式碼高亮**。
-- 草稿(未發佈)只有登入 admin 看得到 `/articles/<slug>`,登出則 404 —— 這是預期行為。
+- Open `/admin/articles` → add an article → type some text and insert a code block (pick a language) → toggle "Publish" on → create.
+- Open `/articles` and you should see the article; click through to `/articles/<slug>` and you should see the body with **code highlighting**.
+- Drafts (unpublished) are only visible at `/articles/<slug>` to a logged-in admin, and 404 when logged out — this is expected behavior.
 
-## 疑難
+## Troubleshooting
 
-| 症狀 | 處理 |
+| Symptom | Fix |
 |---|---|
-| build 失敗說 `article` 不存在於 prisma client | 沒跑到 `prisma generate`:`npx prisma generate` 後再 build |
-| 插入圖片 500 / 上傳失敗 | 專案沒有 R2:補上 R2 或改用純文字 + 程式碼(見 SKILL 前置第 2 點) |
-| Worker 太大 / build 爆 | 確認 `ArticleForm` 是用 `dynamic(..., { ssr:false })` 載入 `Editor`(勿直接 import),避免 tiptap 進 server bundle |
-| `/articles` 空白 | 文章要「發佈」才會出現在公開列表;草稿不算 |
+| Build fails saying `article` doesn't exist on the prisma client | `prisma generate` didn't run: run `npx prisma generate`, then build again |
+| Insert image 500 / upload fails | The project has no R2: add R2, or switch to plain text + code (see SKILL preflight item 2) |
+| Worker too large / build blows up | Confirm `ArticleForm` loads `Editor` via `dynamic(..., { ssr:false })` (don't import it directly), to keep tiptap out of the server bundle |
+| `/articles` is empty | An article must be "published" to appear in the public list; drafts don't count |
