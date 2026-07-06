@@ -1,7 +1,7 @@
 import { getAuth } from "~/server/better-auth";
 import { getDb } from "~/server/db";
 
-// auth 為 per-request（D1 binding 屬請求範圍），於 handler 內建立
+// auth is per-request (the D1 binding is request-scoped), so create it inside the handler
 async function handler(req: Request) {
 	const auth = getAuth(await getDb());
 	return auth.handler(req);

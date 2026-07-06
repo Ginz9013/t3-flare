@@ -11,14 +11,14 @@ export const env = createEnv({
 			process.env.NODE_ENV === "production"
 				? z.string()
 				: z.string().optional(),
-		// 對外網址（如 http://localhost:3000 / https://<name>.workers.dev）
+		// Public URL (e.g. http://localhost:3000 / https://<name>.workers.dev)
 		BETTER_AUTH_URL: z.string().url().optional(),
-		// Node 端（next dev / seed）用本機 SQLite；Workers 改用 D1 binding，故選填
+		// On Node (next dev / seed) uses local SQLite; Workers uses the D1 binding instead, so it's optional
 		DATABASE_URL: z.string().url().optional(),
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		// 僅 seed 用：建立單一管理員帳號（不進版控）
+		// Seed only: create the single admin account (not committed to version control)
 		ADMIN_EMAIL: z.string().email().optional(),
 		ADMIN_PASSWORD: z.string().min(8).optional(),
 		ADMIN_NAME: z.string().optional(),

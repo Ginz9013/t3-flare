@@ -16,7 +16,7 @@ export default function Home() {
 						Stack, deployed on Cloudflare.
 					</p>
 				</div>
-				<Button render={<Link href="/admin">前往後台 →</Link>} />
+				<Button render={<Link href="/admin">Go to Admin →</Link>} />
 			</main>
 		</HydrateClient>
 	);

@@ -7,11 +7,11 @@ import {
 } from "~/server/api/trpc";
 
 /**
- * 範例內容資源的 CRUD router。後台以 protectedProcedure 管理，
- * 前台以 publicProcedure 讀取已發佈內容。可整份複製改名成你的資源。
+ * CRUD router for the example content resource. The admin side manages it via protectedProcedure,
+ * and the public side reads published content via publicProcedure. Copy and rename the whole thing for your own resource.
  */
 export const postRouter = createTRPCRouter({
-	// ── 前台：已發佈列表 ──────────────────────────────
+	// ── Public: published list ──────────────────────────────
 	listPublished: publicProcedure.query(async ({ ctx }) => {
 		return ctx.db.post.findMany({
 			where: { published: true },
@@ -19,7 +19,7 @@ export const postRouter = createTRPCRouter({
 		});
 	}),
 
-	// ── 後台：全部列表 ────────────────────────────────
+	// ── Admin: full list ────────────────────────────────
 	list: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.db.post.findMany({ orderBy: { createdAt: "desc" } });
 	}),

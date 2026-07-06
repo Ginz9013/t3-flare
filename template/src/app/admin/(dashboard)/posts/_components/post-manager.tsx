@@ -38,7 +38,7 @@ export function PostManager() {
 		onSuccess: async () => {
 			await utils.post.list.invalidate();
 			reset();
-			toast.success("已建立");
+			toast.success("Created");
 		},
 		onError: (e) => toast.error(e.message),
 	});
@@ -46,14 +46,14 @@ export function PostManager() {
 		onSuccess: async () => {
 			await utils.post.list.invalidate();
 			reset();
-			toast.success("已更新");
+			toast.success("Updated");
 		},
 		onError: (e) => toast.error(e.message),
 	});
 	const remove = api.post.delete.useMutation({
 		onSuccess: async () => {
 			await utils.post.list.invalidate();
-			toast.success("已刪除");
+			toast.success("Deleted");
 		},
 		onError: (e) => toast.error(e.message),
 	});
@@ -75,9 +75,9 @@ export function PostManager() {
 				className="h-fit space-y-4 rounded-xl border border-border p-5"
 				onSubmit={onSubmit}
 			>
-				<h2 className="font-medium">{editingId ? "編輯內容" : "新增內容"}</h2>
+				<h2 className="font-medium">{editingId ? "Edit post" : "New post"}</h2>
 				<div className="space-y-2">
-					<Label htmlFor="title">標題</Label>
+					<Label htmlFor="title">Title</Label>
 					<Input
 						id="title"
 						onChange={(e) => setTitle(e.target.value)}
@@ -86,7 +86,7 @@ export function PostManager() {
 					/>
 				</div>
 				<div className="space-y-2">
-					<Label htmlFor="content">內容</Label>
+					<Label htmlFor="content">Content</Label>
 					<Textarea
 						id="content"
 						onChange={(e) => setContent(e.target.value)}
@@ -100,15 +100,15 @@ export function PostManager() {
 						id="published"
 						onCheckedChange={setPublished}
 					/>
-					<Label htmlFor="published">發佈</Label>
+					<Label htmlFor="published">Publish</Label>
 				</div>
 				<div className="flex gap-2">
 					<Button disabled={pending} type="submit">
-						{pending ? "儲存中…" : editingId ? "更新" : "建立"}
+						{pending ? "Saving…" : editingId ? "Update" : "Create"}
 					</Button>
 					{editingId && (
 						<Button onClick={reset} type="button" variant="ghost">
-							取消
+							Cancel
 						</Button>
 					)}
 				</div>
@@ -118,9 +118,9 @@ export function PostManager() {
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>標題</TableHead>
-							<TableHead className="w-24">狀態</TableHead>
-							<TableHead className="w-32 text-right">操作</TableHead>
+							<TableHead>Title</TableHead>
+							<TableHead className="w-24">Status</TableHead>
+							<TableHead className="w-32 text-right">Actions</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -129,7 +129,7 @@ export function PostManager() {
 								<TableRow key={post.id}>
 									<TableCell className="font-medium">{post.title}</TableCell>
 									<TableCell className="text-muted-foreground text-sm">
-										{post.published ? "已發佈" : "草稿"}
+										{post.published ? "Published" : "Draft"}
 									</TableCell>
 									<TableCell className="text-right">
 										<Button
@@ -142,18 +142,18 @@ export function PostManager() {
 											size="sm"
 											variant="ghost"
 										>
-											編輯
+											Edit
 										</Button>
 										<Button
 											onClick={() => {
-												if (confirm(`確定刪除「${post.title}」？`)) {
+												if (confirm(`Delete "${post.title}"?`)) {
 													remove.mutate({ id: post.id });
 												}
 											}}
 											size="sm"
 											variant="ghost"
 										>
-											刪除
+											Delete
 										</Button>
 									</TableCell>
 								</TableRow>
@@ -164,7 +164,9 @@ export function PostManager() {
 									className="py-8 text-center text-muted-foreground text-sm"
 									colSpan={3}
 								>
-									{list.isLoading ? "載入中…" : "尚無內容，從左側新增。"}
+									{list.isLoading
+										? "Loading…"
+										: "No posts yet — create one on the left."}
 								</TableCell>
 							</TableRow>
 						)}

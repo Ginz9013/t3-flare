@@ -20,10 +20,10 @@ import {
 import { authClient } from "~/server/better-auth/client";
 
 const navItems = [
-	{ title: "總覽", href: "/admin", icon: LayoutDashboard },
-	{ title: "內容（Posts）", href: "/admin/posts", icon: FileText },
-	// [module:r2] 媒體管理 — 移除 R2 模組時一併刪除此項
-	{ title: "媒體", href: "/admin/media", icon: ImageIcon },
+	{ title: "Overview", href: "/admin", icon: LayoutDashboard },
+	{ title: "Posts", href: "/admin/posts", icon: FileText },
+	// [module:r2] Media management — delete this item when removing the R2 module
+	{ title: "Media", href: "/admin/media", icon: ImageIcon },
 ];
 
 export function AppSidebar({
@@ -47,7 +47,7 @@ export function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>管理</SidebarGroupLabel>
+					<SidebarGroupLabel>Manage</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{navItems.map((item) => (
@@ -78,7 +78,7 @@ export function AppSidebar({
 				</div>
 				<Button onClick={signOut} size="sm" variant="outline">
 					<LogOut />
-					<span>登出</span>
+					<span>Sign out</span>
 				</Button>
 			</SidebarFooter>
 		</Sidebar>

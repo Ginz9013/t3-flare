@@ -21,12 +21,12 @@
 		{
 			"binding": "DB",
 			"database_name": "my-site",
-			// scaffold 時由 `wrangler d1 create my-site` 產生的 id 填入
+			// filled in during scaffolding with the id from `wrangler d1 create my-site`
 			"database_id": "PLACEHOLDER_D1_DATABASE_ID",
 			"migrations_dir": "prisma/d1-migrations"
 		}
 	],
-	// [module:r2] R2 媒體儲存綁定 — 移除 R2 模組時一併刪除此區塊
+	// [module:r2] R2 media storage binding — delete this block when removing the R2 module
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",

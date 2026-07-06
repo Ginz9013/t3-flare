@@ -1,6 +1,6 @@
 "use client";
 
-// [module:r2] 媒體上傳示範頁 — 移除 R2 模組時一併刪除整個 media/ 目錄
+// [module:r2] Media upload demo page — delete the whole media/ directory when removing the R2 module
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -24,21 +24,22 @@ export default function MediaPage() {
 
 		if (!res.ok) {
 			const data = (await res.json().catch(() => ({}))) as { error?: string };
-			toast.error(data.error ?? "上傳失敗");
+			toast.error(data.error ?? "Upload failed");
 			return;
 		}
 		const data = (await res.json()) as { urls: string[] };
 		setUrls((prev) => [...data.urls, ...prev]);
-		toast.success(`已上傳 ${data.urls.length} 張`);
+		toast.success(`Uploaded ${data.urls.length} image(s)`);
 		e.target.value = "";
 	}
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl">媒體</h1>
+				<h1 className="font-semibold text-2xl">Media</h1>
 				<p className="text-muted-foreground text-sm">
-					上傳圖片到 R2，回傳 /media 對外網址。示範 R2 綁定的完整讀寫。
+					Upload images to R2 and get back a public /media URL. Demonstrates
+					full read/write with an R2 binding.
 				</p>
 			</div>
 
@@ -52,7 +53,7 @@ export default function MediaPage() {
 					type="file"
 				/>
 				{uploading && (
-					<span className="text-muted-foreground text-sm">上傳中…</span>
+					<span className="text-muted-foreground text-sm">Uploading…</span>
 				)}
 			</div>
 

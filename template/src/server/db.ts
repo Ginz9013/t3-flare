@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 export type DB = PrismaClient;
 
-// 是否在 Cloudflare Workers runtime（wrangler dev / 正式環境）
+// Whether running in the Cloudflare Workers runtime (wrangler dev / production)
 const isWorkers =
 	typeof navigator !== "undefined" &&
 	navigator.userAgent === "Cloudflare-Workers";
@@ -10,11 +10,11 @@ const isWorkers =
 let nodeClient: PrismaClient | undefined;
 
 /**
- * 取得 Prisma client（driver adapter）：
- * - Workers：每請求以 D1 binding 建立（binding 為請求範圍）
- * - Node（next dev / seed / scripts）：以本機 SQLite 檔建立單例
+ * Get the Prisma client (driver adapter):
+ * - Workers: created per request from the D1 binding (the binding is request-scoped)
+ * - Node (next dev / seed / scripts): a singleton backed by a local SQLite file
  *
- * 同一個 @prisma/client 在 Workers 上由 OpenNext 自動 patch wasm 載入方式。
+ * On Workers, OpenNext automatically patches how the same @prisma/client loads wasm.
  */
 export async function getDb(): Promise<PrismaClient> {
 	if (isWorkers) {

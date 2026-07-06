@@ -68,8 +68,8 @@
 	},
 	"overrides": [
 		{
-			// components/ui/** 為 shadcn 原樣元件，放寬其上游既有的 lint 規則，
-			// 以保持與 shadcn registry 一致、避免每次更新元件都要手動改。
+			// components/ui/** are shadcn components kept as-is; relax the upstream lint rules
+			// to stay in sync with the shadcn registry and avoid manual edits on every update.
 			"includes": ["src/components/ui/**"],
 			"linter": {
 				"rules": {

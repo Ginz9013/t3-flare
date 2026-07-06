@@ -7,9 +7,9 @@ import { getDb } from "~/server/db";
 const db = await getDb();
 const auth = getAuth(db);
 
-// ── 管理員帳號（帳密讀自 .env，不進版控）──────────────────────────
-// 本機 dev 用此 seed；正式 D1 因跑不了 node script，改用 wrangler d1 execute + SQL
-// （site-builder skill 於部署時自動處理）。
+// ── Admin account (credentials read from .env, not committed to version control) ──────────────────────────
+// Local dev uses this seed; production D1 can't run node scripts, so it uses wrangler d1 execute + SQL
+// (handled automatically by the site-builder skill at deploy time).
 async function seedAdmin() {
 	const email = env.ADMIN_EMAIL;
 	const password = env.ADMIN_PASSWORD;
@@ -17,12 +17,12 @@ async function seedAdmin() {
 
 	if (!email || !password) {
 		console.warn(
-			"⚠ 略過管理員建立：請於 .env 設定 ADMIN_EMAIL 與 ADMIN_PASSWORD（密碼至少 8 碼）",
+			"⚠ Skipping admin creation: set ADMIN_EMAIL and ADMIN_PASSWORD in .env (password at least 8 characters)",
 		);
 		return;
 	}
 
-	// 以 Better Auth 的雜湊器產生密碼，確保登入時能驗證
+	// Hash the password with Better Auth's hasher so it verifies at login
 	const ctx = await auth.$context;
 	const hashed = await ctx.password.hash(password);
 
@@ -31,12 +31,12 @@ async function seedAdmin() {
 		user = await db.user.create({
 			data: { id: randomUUID(), email, name, emailVerified: true },
 		});
-		console.log(`✓ 管理員 user 建立：${email}`);
+		console.log(`✓ Admin user created: ${email}`);
 	} else {
-		console.log(`• 管理員 user 已存在：${email}`);
+		console.log(`• Admin user already exists: ${email}`);
 	}
 
-	// credential 憑證（email/password）
+	// Credential account (email/password)
 	const account = await db.account.findFirst({
 		where: { userId: user.id, providerId: "credential" },
 	});
@@ -50,13 +50,13 @@ async function seedAdmin() {
 				password: hashed,
 			},
 		});
-		console.log("✓ 管理員密碼憑證建立");
+		console.log("✓ Admin password credential created");
 	} else {
 		await db.account.update({
 			where: { id: account.id },
 			data: { password: hashed },
 		});
-		console.log("• 管理員密碼已更新");
+		console.log("• Admin password updated");
 	}
 }
 

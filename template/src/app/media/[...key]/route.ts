@@ -2,7 +2,7 @@ import { getObject, guessContentType } from "~/server/r2";
 
 export const dynamic = "force-dynamic";
 
-// [module:r2] 由 R2 提供媒體：/media/uploads/<uuid>.jpg → R2 key "uploads/<uuid>.jpg"
+// [module:r2] Serve media from R2: /media/uploads/<uuid>.jpg → R2 key "uploads/<uuid>.jpg"
 export async function GET(
 	_req: Request,
 	{ params }: { params: Promise<{ key: string[] }> },

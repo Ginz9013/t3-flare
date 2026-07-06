@@ -1,19 +1,19 @@
-// Prisma schema — Better Auth + 範例內容模型（Post）
+// Prisma schema — Better Auth + example content model (Post)
 // learn more: https://better-auth.com/docs/concepts/database
 
 generator client {
   provider = "prisma-client-js"
 }
 
-// Prisma 7：datasource 僅宣告 provider；連線 URL 與 migrations 設定移到 prisma.config.ts。
-// 執行期（app）一律透過 driver adapter 連線（Workers→D1、Node→better-sqlite3）。
+// Prisma 7: the datasource only declares the provider; the connection URL and migrations config move to prisma.config.ts.
+// At runtime the app always connects via the driver adapter (Workers→D1, Node→better-sqlite3).
 datasource db {
   provider = "sqlite"
 }
 
 // ─────────────────────────────────────────────────────────────
-// Auth（Better Auth 管理，請勿更動結構）
-// 採單一管理員：任何登入者即 admin，並於 better-auth config 關閉公開註冊。
+// Auth (managed by Better Auth, do not change the structure)
+// Single-admin model: any logged-in user is an admin, and public sign-up is disabled in the better-auth config.
 // ─────────────────────────────────────────────────────────────
 
 model User {
@@ -78,7 +78,7 @@ model Verification {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 範例內容模型：後台 CRUD 的示範資源。可自由改名或替換成你的實體。
+// Example content model: a demo resource for admin CRUD. Feel free to rename or replace it with your own entity.
 // ─────────────────────────────────────────────────────────────
 
 model Post {

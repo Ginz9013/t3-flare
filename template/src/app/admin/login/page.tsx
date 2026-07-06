@@ -21,7 +21,7 @@ export default function LoginPage() {
 		const { error } = await authClient.signIn.email({ email, password });
 		setLoading(false);
 		if (error) {
-			toast.error(error.message ?? "登入失敗");
+			toast.error(error.message ?? "Sign in failed");
 			return;
 		}
 		router.push("/admin");
@@ -35,9 +35,9 @@ export default function LoginPage() {
 				onSubmit={onSubmit}
 			>
 				<div className="space-y-1">
-					<h1 className="font-semibold text-2xl">後台登入</h1>
+					<h1 className="font-semibold text-2xl">Admin Login</h1>
 					<p className="text-muted-foreground text-sm">
-						以管理員帳號登入 my-site
+						Sign in to my-site with your admin account
 					</p>
 				</div>
 				<div className="space-y-2">
@@ -52,7 +52,7 @@ export default function LoginPage() {
 					/>
 				</div>
 				<div className="space-y-2">
-					<Label htmlFor="password">密碼</Label>
+					<Label htmlFor="password">Password</Label>
 					<Input
 						autoComplete="current-password"
 						id="password"
@@ -63,7 +63,7 @@ export default function LoginPage() {
 					/>
 				</div>
 				<Button className="w-full" disabled={loading} size="lg" type="submit">
-					{loading ? "登入中…" : "登入"}
+					{loading ? "Signing in…" : "Sign in"}
 				</Button>
 			</form>
 		</main>

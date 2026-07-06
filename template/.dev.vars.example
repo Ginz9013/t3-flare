@@ -1,10 +1,10 @@
-# 本機 Workers 預覽（npm run cf:preview / wrangler dev）專用的環境變數。
-# 複製此檔為 .dev.vars（已 gitignore）。正式環境機密請改用 `wrangler secret put`。
+# Environment variables specifically for local Workers preview (npm run cf:preview / wrangler dev).
+# Copy this file to .dev.vars (gitignored). For production secrets, use `wrangler secret put` instead.
 #
-# 注意：這裡的值會「覆蓋」wrangler.jsonc 的 vars（僅限本機 dev）。
+# Note: the values here "override" the vars in wrangler.jsonc (local dev only).
 
-# 本機測試用 secret（可與 .env 同值；務必與正式環境的 secret 不同）
+# Secret for local testing (may match the .env value; must differ from the production secret)
 BETTER_AUTH_SECRET=""
 
-# 覆蓋成本機預覽網址（依 cf:preview 實際輸出的 port 調整）
+# Override with the local preview URL (adjust to the port that cf:preview actually prints)
 BETTER_AUTH_URL="http://localhost:8788"

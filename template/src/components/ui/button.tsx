@@ -51,8 +51,8 @@ function Button({
 		<ButtonPrimitive
 			className={cn(buttonVariants({ variant, size, className }))}
 			data-slot="button"
-			// 透過 render 改渲成 <Link>/<a> 等非 button 元素時，須關掉 nativeButton，
-			// 否則 Base UI 會警告語意不符；未指定 render 時維持原生 button 行為
+			// When render swaps in a non-button element like <Link>/<a>, turn off nativeButton,
+			// otherwise Base UI warns about the semantic mismatch; keep native button behavior when render is not set
 			nativeButton={nativeButton ?? !render}
 			render={render}
 			{...props}

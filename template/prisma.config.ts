@@ -1,15 +1,15 @@
 import { defineConfig } from "prisma/config";
 
-// Prisma 7 不再自動載入 .env，於此手動載入（Node 20.12+ 內建）。
+// Prisma 7 no longer auto-loads .env, so load it manually here (built into Node 20.12+).
 try {
 	process.loadEnvFile();
 } catch {
-	// .env 不存在時忽略
+	// Ignore if .env doesn't exist
 }
 
-// Prisma 7：datasource URL 與 migrations 設定移到此處（CLI / Migrate 用）。
-// 執行期（app）一律透過 driver adapter 連線，不依賴此 url。
-// 用 process.env + fallback（而非會 throw 的 env()），讓無 .env 時也能 install/generate。
+// Prisma 7: datasource URL and migrations config live here (used by CLI / Migrate).
+// At runtime the app always connects via the driver adapter and doesn't rely on this url.
+// Use process.env + fallback (instead of env() which throws) so install/generate works without .env.
 export default defineConfig({
 	schema: "prisma/schema.prisma",
 	migrations: {
