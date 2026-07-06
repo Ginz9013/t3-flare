@@ -3,6 +3,13 @@
 本專案的變更記錄。site-builder / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
 無安裝快取;取得更新只需 `git pull`。
 
+## 0.2.2
+
+- **feat(skill)**: 新增 **delete-site** skill —— 透過 wrangler 刪除一個網站的所有 Cloudflare
+  資源(Worker / D1 / R2),使用者不必進 Cloudflare 後台。含資源盤點、明確確認(複誦 slug)、
+  選擇性 D1 備份、逐一刪除,以及非空 R2 的誠實處理(wrangler 無批次清空 bucket 能力 →
+  留著免費 / 或 dashboard 按一次 Empty)。site-builder 的 maintain.md 移除整站段落收斂為指向此 skill。
+
 ## 0.2.1
 
 - **feat(site-builder)**: SKILL.md 加「鐵則」段 —— template-first 為不可協商順序(含禁止事項:

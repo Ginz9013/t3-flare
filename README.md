@@ -102,6 +102,7 @@ After your site is live, any change is made the same way — through a conversat
 - Add a blog: the assistant uses **add-blog** to add an article system (editor and article pages)
 - Reset the admin password
 - Bind a custom domain
+- Delete the whole site: the assistant uses **delete-site** to tear down all Cloudflare resources (no dashboard needed)
 
 The assistant previews changes locally first, then updates the live site once you confirm.
 

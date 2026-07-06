@@ -47,15 +47,10 @@ npx wrangler d1 export <slug> --remote --output backup-$(date +%Y%m%d).sql
 
 ## 砍掉重練 / 移除整個站
 
-要完全移除一個站(釋放 Cloudflare 資源、避免佔用名稱與費用):
+要完全移除一個站(釋放 Cloudflare 資源),使用專屬的 **delete-site** skill(`skills/delete-site/`)——
+它涵蓋盤點資源、明確確認、選擇性備份、逐一刪除 Worker/D1/R2、以及非空 R2 的處理。
 
-```bash
-npx wrangler delete --name <slug>          # 刪除 Worker(線上網站)
-npx wrangler d1 delete <slug>              # 刪除 D1 資料庫(資料一併消失,先確認)
-npx wrangler r2 bucket delete <slug>       # 若當初有建 R2；bucket 需先清空物件
-```
-
-**破壞性且不可逆** —— 執行前先向使用者白話確認「這會把整個網站與所有資料刪掉,無法復原」。之後刪本機專案資料夾即可。若只是要用同名重建,刪掉這些資源後再重跑供裝流程。
+若只是要用同名重建:先用 delete-site 刪掉資源,再重跑 site-builder 的供裝流程。
 
 ## 升級語義
 
