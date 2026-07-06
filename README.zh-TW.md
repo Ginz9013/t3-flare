@@ -100,6 +100,7 @@ cd my-website
 
 - 修改頁面內容或文案
 - 新增部落格：助理透過 **add-blog** 為網站加入文章系統（含編輯器與文章頁）
+- 新增聯絡表單：助理透過 **add-contact-form** 加入聯絡頁與後台收件匣（可選配 Turnstile 與 Email 通知）
 - 重設後台密碼
 - 綁定自訂網域
 - 刪除整個網站：助理透過 **delete-site** 清除所有 Cloudflare 資源（不必進後台）

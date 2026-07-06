@@ -1,0 +1,19 @@
+// ── add-contact-form: contact message model ───────────────────
+// Append this model to prisma/schema.prisma. No relation to User, so no
+// back-reference is needed. D1 is the single source of truth for submissions.
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  ipAddress String? // CF-Connecting-IP
+  userAgent String?
+  isRead    Boolean  @default(false)
+  status    String   @default("new") // "new" | "replied" | "archived"
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ipAddress, createdAt]) // rate-limit lookups
+  @@map("contact")
+}

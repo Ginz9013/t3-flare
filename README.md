@@ -100,6 +100,7 @@ After your site is live, any change is made the same way — through a conversat
 
 - Edit page content or copy
 - Add a blog: the assistant uses **add-blog** to add an article system (editor and article pages)
+- Add a contact form: the assistant uses **add-contact-form** to add a contact page and an admin inbox (with optional Turnstile and email notifications)
 - Reset the admin password
 - Bind a custom domain
 - Delete the whole site: the assistant uses **delete-site** to tear down all Cloudflare resources (no dashboard needed)

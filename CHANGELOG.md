@@ -3,6 +3,17 @@
 本專案的變更記錄。site-builder / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
 無安裝快取;取得更新只需 `git pull`。
 
+## 0.2.3
+
+- **feat(skill)**: 新增 **add-contact-form** —— 前台 `/contact` 表單 → 存 D1 → 後台
+  `/admin/contacts` 收件匣(檢視/狀態/mailto 回覆/刪除),含 honeypot + IP 限流。
+  兩層架構:核心(存 D1)一定能用;**Turnstile 防 bot** 與 **Email 通知** 為選配
+  (程式碼優雅降級 —— 沒設金鑰/binding 就跳過)。Email 需已驗證網域,裸 workers.dev
+  只用收件匣。v1 不含自動回覆。已 overlay build 驗證(tsc/biome/next build 綠)。
+- **decision**: 評估後**不建立** add-analytics(GA 太瑣碎、基本 SEO 應為 template 預設 →
+  列 backlog)與 add-custom-domain(真正摩擦在註冊商/DNS nameserver,AI 無法代操;
+  瑣碎部分已在 site-builder 的 maintain.md)。
+
 ## 0.2.2
 
 - **feat(skill)**: 新增 **delete-site** skill —— 透過 wrangler 刪除一個網站的所有 Cloudflare
