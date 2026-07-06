@@ -1,7 +1,16 @@
 # Changelog
 
-版本號對應 `plugin.json` / `marketplace.json` 的 `version`。改動 skill 或 template 後 bump 版本,
-安裝端才會建新的 cache 目錄、確實抓到更新(cache 以版本號為 key)。
+本專案的變更記錄。site-butler / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
+無安裝快取;取得更新只需 `git pull`。
+
+## 0.2.0
+
+- **重構**: 移除 Claude plugin / marketplace 包裝(`.claude-plugin/`、`plugins/` 巢狀),
+  改為 repo 根的純 `skills/` 資料夾。skill 為指示檔形式,任意具檔案/終端機能力的 AI 代理
+  (Claude Code、Codex CLI、Gemini CLI…)皆可直接讀取執行,不再綁 Claude 專屬安裝機制,
+  也消除了 plugin 安裝快取造成的「載到舊版」問題。
+- README 安裝說明改為「讓你的 AI 代理讀取 repo 內的 `SKILL.md`」;Claude 使用者可另複製至
+  `~/.claude/skills/` 常駐使用。
 
 ## 0.1.2
 
