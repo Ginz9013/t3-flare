@@ -1,4 +1,4 @@
-// 精選語言（取代 lowlight `common` 的全量語言集，大幅縮小 bundle）
+// Curated languages (replaces lowlight's full `common` language set to greatly shrink the bundle)
 import bash from "highlight.js/lib/languages/bash";
 import css from "highlight.js/lib/languages/css";
 import diff from "highlight.js/lib/languages/diff";
@@ -15,9 +15,9 @@ import yaml from "highlight.js/lib/languages/yaml";
 import { createLowlight } from "lowlight";
 
 /**
- * 共用的 lowlight 實例（編輯器與前台 server 渲染共用）。
- * 獨立成一個僅依賴 highlight.js 的模組，讓前台文章頁的 server 渲染
- * 不會連帶把整套 Tiptap / ProseMirror 拖進 Worker bundle。
+ * Shared lowlight instance (used by both the editor and front-end server rendering).
+ * Kept as a standalone module depending only on highlight.js, so server rendering of
+ * the public article page doesn't drag the whole Tiptap / ProseMirror stack into the Worker bundle.
  */
 export const lowlight = createLowlight();
 lowlight.register({

@@ -1,6 +1,6 @@
 /**
- * Tiptap / ProseMirror JSON 的純函式工具。
- * 不依賴 @tiptap/* 套件，可在 Workers / Node 任一端安全執行。
+ * Pure-function utilities for Tiptap / ProseMirror JSON.
+ * No dependency on @tiptap/* packages, so it runs safely on either Workers or Node.
  */
 
 type ProseMirrorNode = {
@@ -9,7 +9,7 @@ type ProseMirrorNode = {
 	content?: ProseMirrorNode[];
 };
 
-/** 會在前後補換行的區塊節點（讓抽出的純文字保有段落感） */
+/** Block nodes that get newlines added around them (so extracted plain text keeps a sense of paragraphs) */
 const BLOCK_TYPES = new Set([
 	"paragraph",
 	"heading",
@@ -20,7 +20,7 @@ const BLOCK_TYPES = new Set([
 	"orderedList",
 ]);
 
-/** 從 ProseMirror JSON 遞迴抽出純文字，供搜尋與摘要 fallback 使用 */
+/** Recursively extract plain text from ProseMirror JSON, for search and excerpt fallback */
 export function extractPlainText(doc: unknown): string {
 	const out: string[] = [];
 
@@ -40,7 +40,7 @@ export function extractPlainText(doc: unknown): string {
 		.trim();
 }
 
-/** 估算閱讀時間（分鐘，至少 1）；中文約 350 字/分，英文 word 一併計入 */
+/** Estimate reading time (minutes, at least 1); Chinese ~350 chars/min, English words counted too */
 export function readingTimeMinutes(plainText: string): number {
 	const cjk = (plainText.match(/[一-鿿぀-ヿ]/g) ?? []).length;
 	const words = (plainText.match(/[A-Za-z0-9]+/g) ?? []).length;

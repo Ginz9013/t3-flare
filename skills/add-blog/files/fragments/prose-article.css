@@ -1,5 +1,5 @@
-/* ── add-blog：文章內文樣式（追加到 src/styles/globals.css 尾端）───── */
-/* 主題感知：內文用主題色；程式碼區塊固定 github-dark（深色更耐讀）。 */
+/* ── add-blog: article body styles (append to the end of src/styles/globals.css) ── */
+/* Theme-aware: body uses theme colors; code blocks fixed to github-dark (dark is easier to read). */
 
 .prose-article {
 	color: var(--foreground);
@@ -84,7 +84,7 @@
 	color: #e6edf3;
 }
 
-/* highlight.js — github-dark（lowlight server 端輸出的 class） */
+/* highlight.js — github-dark (classes emitted by lowlight on the server) */
 .hljs-comment,
 .hljs-quote {
 	color: #8b949e;

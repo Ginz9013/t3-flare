@@ -1,4 +1,4 @@
-/** 將字串轉成網址友善的 slug；非英數轉連字號，保留中日韓字 */
+/** Convert a string into a URL-friendly slug; non-alphanumerics become hyphens, CJK characters are kept */
 export function slugify(input: string): string {
 	return input
 		.toLowerCase()

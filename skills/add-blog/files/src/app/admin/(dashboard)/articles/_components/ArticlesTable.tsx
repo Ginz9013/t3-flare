@@ -30,19 +30,19 @@ export function ArticlesTable() {
 
 	const del = api.article.delete.useMutation({
 		onSuccess: async () => {
-			toast.success("文章已刪除");
+			toast.success("Article deleted");
 			await utils.article.list.invalidate();
 		},
 		onError: (e) => toast.error(e.message),
 	});
 
 	const onDelete = (id: string, title: string) => {
-		if (!window.confirm(`確定刪除「${title}」？此動作無法復原。`)) return;
+		if (!window.confirm(`Delete "${title}"? This action cannot be undone.`)) return;
 		del.mutate({ id });
 	};
 
 	if (articles.isLoading) {
-		return <p className="text-muted-foreground text-sm">載入中…</p>;
+		return <p className="text-muted-foreground text-sm">Loading…</p>;
 	}
 
 	const rows = articles.data ?? [];
@@ -52,10 +52,10 @@ export function ArticlesTable() {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>標題</TableHead>
-						<TableHead className="w-24">狀態</TableHead>
-						<TableHead className="w-32 font-mono">發佈</TableHead>
-						<TableHead className="w-32 text-right">操作</TableHead>
+						<TableHead>Title</TableHead>
+						<TableHead className="w-24">Status</TableHead>
+						<TableHead className="w-32 font-mono">Published</TableHead>
+						<TableHead className="w-32 text-right">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -65,7 +65,7 @@ export function ArticlesTable() {
 								className="py-16 text-center text-muted-foreground text-sm"
 								colSpan={4}
 							>
-								尚無文章，點右上「新增文章」開始。
+								No articles yet. Click "New article" at the top right to start.
 							</TableCell>
 						</TableRow>
 					)}
@@ -98,7 +98,7 @@ export function ArticlesTable() {
 										size="sm"
 										variant="ghost"
 									>
-										編輯
+										Edit
 									</Button>
 									<Button
 										className="text-destructive hover:text-destructive"
@@ -107,7 +107,7 @@ export function ArticlesTable() {
 										size="sm"
 										variant="ghost"
 									>
-										刪除
+										Delete
 									</Button>
 								</div>
 							</TableCell>

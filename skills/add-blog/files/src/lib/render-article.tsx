@@ -3,9 +3,9 @@ import { Fragment, type ReactNode } from "react";
 import { lowlight } from "~/lib/lowlight";
 
 /**
- * 將 Tiptap ProseMirror JSON 在 server 端渲染為 React 元素。
- * 程式碼區塊以 lowlight 在 server 完成語法高亮，因此前台文章頁
- * 不需載入任何 Tiptap / highlight.js client bundle。
+ * Render Tiptap ProseMirror JSON into React elements on the server.
+ * Code blocks are syntax-highlighted on the server with lowlight, so the public
+ * article page doesn't need to load any Tiptap / highlight.js client bundle.
  */
 
 type PMMark = { type: string; attrs?: Record<string, unknown> };
@@ -17,7 +17,7 @@ type PMNode = {
 	content?: PMNode[];
 };
 
-// ── hast（lowlight 輸出）→ React ────────────────────────────────
+// ── hast (lowlight output) → React ──────────────────────────────
 type HastNode =
 	| { type: "text"; value: string }
 	| {
@@ -30,7 +30,7 @@ type HastNode =
 
 function hastChildren(children: HastNode[]): ReactNode {
 	return children.map((c, i) => (
-		// biome-ignore lint/suspicious/noArrayIndexKey: 語法高亮樹為靜態、永不重排
+		// biome-ignore lint/suspicious/noArrayIndexKey: syntax-highlight tree is static and never reordered
 		<Fragment key={i}>{hastToReact(c, i)}</Fragment>
 	));
 }
@@ -57,7 +57,7 @@ function highlightCode(code: string, language?: string): ReactNode {
 	return code;
 }
 
-// ── marks 包裹 ──────────────────────────────────────────────────
+// ── mark wrapping ───────────────────────────────────────────────
 function applyMarks(text: ReactNode, marks: PMMark[] | undefined, key: number) {
 	if (!marks?.length) return text;
 	return marks.reduce<ReactNode>((acc, mark) => {
@@ -93,7 +93,7 @@ function applyMarks(text: ReactNode, marks: PMMark[] | undefined, key: number) {
 	}, text);
 }
 
-// ── ProseMirror 節點 → React ────────────────────────────────────
+// ── ProseMirror node → React ────────────────────────────────────
 function renderNode(node: PMNode, key: number): ReactNode {
 	const children = node.content?.map((c, i) => renderNode(c, i));
 
@@ -132,7 +132,7 @@ function renderNode(node: PMNode, key: number): ReactNode {
 		}
 		case "image":
 			return (
-				// biome-ignore lint/performance/noImgElement: 內文圖尺寸不定且來自 R2，不適用 next/image
+				// biome-ignore lint/performance/noImgElement: body images vary in size and come from R2, so next/image doesn't apply
 				<img
 					alt={String(node.attrs?.alt ?? "")}
 					key={key}

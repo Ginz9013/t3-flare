@@ -21,18 +21,18 @@ import { toast } from "sonner";
 import { tiptapExtensions } from "~/lib/tiptap-extensions";
 import { cn } from "~/lib/utils";
 
-/** 上傳單一圖片檔到 R2，回傳對外網址（需專案保留 R2 模組 / /api/upload） */
+/** Upload a single image file to R2 and return its public URL (requires the project to keep the R2 module / /api/upload) */
 async function uploadImage(file: File): Promise<string> {
 	const fd = new FormData();
 	fd.append("files", file);
 	const res = await fetch("/api/upload", { method: "POST", body: fd });
 	if (!res.ok) {
 		const d = (await res.json().catch(() => ({}))) as { error?: string };
-		throw new Error(d.error ?? "上傳失敗（此功能需要圖片上傳 / R2）");
+		throw new Error(d.error ?? "Upload failed (this feature requires image upload / R2)");
 	}
 	const { urls } = (await res.json()) as { urls: string[] };
 	const url = urls[0];
-	if (!url) throw new Error("上傳失敗");
+	if (!url) throw new Error("Upload failed");
 	return url;
 }
 
@@ -77,7 +77,7 @@ export function Editor({
 	const editor = useEditor({
 		extensions: tiptapExtensions,
 		content: (value as object) ?? "",
-		immediatelyRender: false, // 避免 Next.js SSR hydration mismatch
+		immediatelyRender: false, // Avoid Next.js SSR hydration mismatch
 		editorProps: {
 			attributes: {
 				class: "prose-article min-h-[420px] px-5 py-4 focus:outline-none",
@@ -112,7 +112,7 @@ export function Editor({
 					const url = await uploadImage(file);
 					editor.chain().focus().setImage({ src: url }).run();
 				} catch (err) {
-					toast.error(err instanceof Error ? err.message : "圖片上傳失敗");
+					toast.error(err instanceof Error ? err.message : "Image upload failed");
 				}
 			}
 		},
@@ -136,21 +136,21 @@ export function Editor({
 				<ToolbarButton
 					active={editor.isActive("bold")}
 					onClick={() => editor.chain().focus().toggleBold().run()}
-					title="粗體"
+					title="Bold"
 				>
 					<Bold className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("italic")}
 					onClick={() => editor.chain().focus().toggleItalic().run()}
-					title="斜體"
+					title="Italic"
 				>
 					<Italic className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("strike")}
 					onClick={() => editor.chain().focus().toggleStrike().run()}
-					title="刪除線"
+					title="Strikethrough"
 				>
 					<Strikethrough className="size-4" />
 				</ToolbarButton>
@@ -160,14 +160,14 @@ export function Editor({
 				<ToolbarButton
 					active={editor.isActive("heading", { level: 2 })}
 					onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-					title="標題 H2"
+					title="Heading 2"
 				>
 					<Heading2 className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("heading", { level: 3 })}
 					onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-					title="標題 H3"
+					title="Heading 3"
 				>
 					<Heading3 className="size-4" />
 				</ToolbarButton>
@@ -177,35 +177,35 @@ export function Editor({
 				<ToolbarButton
 					active={editor.isActive("bulletList")}
 					onClick={() => editor.chain().focus().toggleBulletList().run()}
-					title="項目清單"
+					title="Bullet list"
 				>
 					<List className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("orderedList")}
 					onClick={() => editor.chain().focus().toggleOrderedList().run()}
-					title="編號清單"
+					title="Numbered list"
 				>
 					<ListOrdered className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("blockquote")}
 					onClick={() => editor.chain().focus().toggleBlockquote().run()}
-					title="引用"
+					title="Quote"
 				>
 					<Quote className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					active={editor.isActive("codeBlock")}
 					onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-					title="程式碼區塊"
+					title="Code block"
 				>
 					<Code2 className="size-4" />
 				</ToolbarButton>
 
 				<span className="mx-1 h-5 w-px bg-border" />
 
-				<ToolbarButton onClick={() => fileRef.current?.click()} title="插入圖片">
+				<ToolbarButton onClick={() => fileRef.current?.click()} title="Insert image">
 					<ImageIcon className="size-4" />
 				</ToolbarButton>
 
@@ -214,14 +214,14 @@ export function Editor({
 				<ToolbarButton
 					disabled={!editor.can().undo()}
 					onClick={() => editor.chain().focus().undo().run()}
-					title="復原"
+					title="Undo"
 				>
 					<Undo2 className="size-4" />
 				</ToolbarButton>
 				<ToolbarButton
 					disabled={!editor.can().redo()}
 					onClick={() => editor.chain().focus().redo().run()}
-					title="重做"
+					title="Redo"
 				>
 					<Redo2 className="size-4" />
 				</ToolbarButton>

@@ -5,9 +5,9 @@ import StarterKit from "@tiptap/starter-kit";
 import { lowlight } from "~/lib/lowlight";
 
 /**
- * 編輯器使用的 Tiptap extensions（client 端）。
- * 注意：前台 server 渲染請改用 ~/lib/render-article（只依賴 lowlight），
- * 不要從這裡匯入，否則會把整套 Tiptap / ProseMirror 帶進 Worker bundle。
+ * Tiptap extensions used by the editor (client side).
+ * Note: for front-end server rendering use ~/lib/render-article instead (depends only on lowlight);
+ * don't import from here, or the whole Tiptap / ProseMirror stack ends up in the Worker bundle.
  */
 export const tiptapExtensions = [
 	StarterKit.configure({ codeBlock: false }),

@@ -11,18 +11,18 @@ import {
 import type { DB } from "~/server/db";
 
 const articleInput = z.object({
-	title: z.string().min(1, "請輸入標題"),
-	slug: z.string().min(1, "請輸入英文網址 slug"),
-	excerpt: z.string().min(1, "請輸入摘要"),
+	title: z.string().min(1, "Please enter a title"),
+	slug: z.string().min(1, "Please enter a URL slug"),
+	excerpt: z.string().min(1, "Please enter an excerpt"),
 	content: z.unknown(), // Tiptap ProseMirror JSON document
 	status: z.enum(["draft", "published"]).default("draft"),
-	// 可選：手動指定發佈時間；未給則首次發佈自動帶入
+	// Optional: manually set the publish time; if omitted, the first publish fills it in automatically
 	publishedAt: z.coerce.date().optional().nullable(),
 });
 
 type ArticleInput = z.infer<typeof articleInput>;
 
-/** 產生唯一 slug；衝突時加序號（排除自身） */
+/** Generate a unique slug; append a number on collision (excluding itself) */
 async function uniqueSlug(db: DB, base: string, excludeId?: string) {
 	const root = slugify(base) || "post";
 	let slug = root;
@@ -35,7 +35,7 @@ async function uniqueSlug(db: DB, base: string, excludeId?: string) {
 	}
 }
 
-/** 由 input 算出要寫入 DB 的內文衍生欄位 */
+/** Compute the content-derived fields to write to the DB from the input */
 function contentFields(input: ArticleInput) {
 	return {
 		content: JSON.stringify(input.content ?? {}),
@@ -44,12 +44,12 @@ function contentFields(input: ArticleInput) {
 }
 
 export const articleRouter = createTRPCRouter({
-	// ── 後台列表 ───────────────────────────────────────────────
+	// ── Admin list ─────────────────────────────────────────────
 	list: protectedProcedure.query(({ ctx }) =>
 		ctx.db.article.findMany({ orderBy: { updatedAt: "desc" } }),
 	),
 
-	// ── 前台公開列表：最新已發佈 ────────────────────────────────
+	// ── Public list: latest published ──────────────────────────
 	publicList: publicProcedure
 		.input(z.object({ limit: z.number().min(1).max(50).default(20) }).optional())
 		.query(async ({ ctx, input }) => {
@@ -72,7 +72,7 @@ export const articleRouter = createTRPCRouter({
 			}));
 		}),
 
-	// ── sitemap 用：所有已發佈文章的 slug 與時間 ────────────────
+	// ── For sitemap: slugs and timestamps of all published articles ──
 	publishedSlugs: publicProcedure.query(({ ctx }) =>
 		ctx.db.article.findMany({
 			where: { status: "published" },
@@ -81,7 +81,7 @@ export const articleRouter = createTRPCRouter({
 		}),
 	),
 
-	// ── 前台詳情：依 slug；admin 登入態可預覽草稿 ────────────────
+	// ── Public detail: by slug; signed-in admin can preview drafts ──
 	publicBySlug: publicProcedure
 		.input(z.object({ slug: z.string() }))
 		.query(async ({ ctx, input }) => {
@@ -89,7 +89,7 @@ export const articleRouter = createTRPCRouter({
 				where: { slug: input.slug },
 			});
 			if (!article) throw new TRPCError({ code: "NOT_FOUND" });
-			// 未發佈文章僅 admin 可見（草稿預覽）
+			// Unpublished articles are visible to admins only (draft preview)
 			if (article.status !== "published" && !ctx.session?.user) {
 				throw new TRPCError({ code: "NOT_FOUND" });
 			}
@@ -100,7 +100,7 @@ export const articleRouter = createTRPCRouter({
 			};
 		}),
 
-	// ── 後台編輯載入 ───────────────────────────────────────────
+	// ── Admin edit load ────────────────────────────────────────
 	byId: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ ctx, input }) => {

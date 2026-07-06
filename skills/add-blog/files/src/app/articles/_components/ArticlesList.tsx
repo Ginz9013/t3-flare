@@ -17,12 +17,12 @@ export function ArticlesList() {
 	const list = api.article.publicList.useQuery();
 
 	if (list.isLoading) {
-		return <p className="text-muted-foreground text-sm">載入中…</p>;
+		return <p className="text-muted-foreground text-sm">Loading…</p>;
 	}
 
 	const items = list.data ?? [];
 	if (items.length === 0) {
-		return <p className="text-muted-foreground text-sm">還沒有文章。</p>;
+		return <p className="text-muted-foreground text-sm">No articles yet.</p>;
 	}
 
 	return (

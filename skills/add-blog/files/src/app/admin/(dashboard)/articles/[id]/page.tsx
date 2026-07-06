@@ -1,6 +1,6 @@
 import { ArticleForm } from "../_components/ArticleForm";
 
-export const metadata = { title: "編輯文章" };
+export const metadata = { title: "Edit article" };
 
 export default async function EditArticlePage({
 	params,
@@ -10,7 +10,7 @@ export default async function EditArticlePage({
 	const { id } = await params;
 	return (
 		<div className="space-y-6">
-			<h1 className="font-semibold text-2xl">編輯文章</h1>
+			<h1 className="font-semibold text-2xl">Edit article</h1>
 			<ArticleForm articleId={id} mode="edit" />
 		</div>
 	);

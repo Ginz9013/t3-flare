@@ -68,7 +68,7 @@ export default async function ArticlePage({ params }: Params) {
 
 			{isDraft && (
 				<div className="mt-8 rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-amber-600 text-xs dark:text-amber-200">
-					草稿預覽 — 僅登入的管理員可見
+					Draft preview — visible to signed-in admin only
 				</div>
 			)}
 
