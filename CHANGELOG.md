@@ -3,6 +3,18 @@
 本專案的變更記錄。site-builder / add-blog 以純指示檔(`skills/`)提供,由 AI 代理直接讀取,
 無安裝快取;取得更新只需 `git pull`。
 
+## 0.2.1
+
+- **feat(site-builder)**: SKILL.md 加「鐵則」段 —— template-first 為不可協商順序(含禁止事項:
+  不自建架構、不以 localStorage/JSON 當資料庫、檔案一律 R2),並附具體反例(預約排課案例)。
+  源自非 Claude agent(Codex)實測:功能導向 prompt 會誘使 agent 先寫內容、跳過 scaffold。
+- **feat(site-builder)**: 流程改為兩階段 —— Phase A 起站(scaffold→供裝→部署)/ Phase B 功能實作;
+  訪談新增功能需求收集(記錄、不立即實作);允許「帳號未就緒 → 先本機開發」降級,但仍必須從 template 開始。
+- **feat(site-builder)**: 新增 `references/build-features.md` —— 在 template 軌道上實作功能的
+  runbook(model → 雙軌遷移 → tRPC → 頁面 → 預覽 → 部署),含資料存放規則表與預約排課範例;
+  maintain.md 的加功能段落收斂為指向此文件。
+- **docs(site-builder)**: 新增「非適用情境」—— 既有專案部署明確 out of scope。
+
 ## 0.2.0
 
 - **重構**: 移除 Claude plugin / marketplace 包裝(`.claude-plugin/`、`plugins/` 巢狀),

@@ -15,18 +15,12 @@ npm run dev          # http://localhost:3000（用本機 SQLite,雙模式 getDb 
 - 請使用者開 `localhost:3000` 看效果。話術固定:「這是預覽版,你在後台輸入的正式內容要到線上網址操作」(本機與線上 D1 是兩份資料)。
 - 滿意後上線:`npm run cf:deploy`。
 
-## 改內容 / 加頁面
+## 改內容 / 加功能
 
-- 純文案:改對應的 `page.tsx` / 元件。
-- 加一個新的內容類型:仿 `src/server/api/routers/post.ts` + `prisma/schema.prisma` 的 Post,新增 model 後:
-  ```bash
-  # 本機遷移
-  npm run db:generate
-  # 產生對應 D1 遷移 SQL,加進 prisma/d1-migrations/000N_xxx.sql,再 cf:migrate
-  npx prisma migrate diff --from-schema-datasource prisma/schema.prisma \
-    --to-schema prisma/schema.prisma --script   # 視情況用 diff 產生增量
-  ```
-  改 schema 屬結構變更 —— **先備份**(見下)。
+- 純文案:改對應的 `page.tsx` / 元件,預覽後部署。
+- 加新功能或新的內容類型(含 schema 變更、新 router、新頁面):一律走
+  [build-features.md](build-features.md) 的軌道(model → 雙軌遷移 → tRPC → 頁面 → 預覽 → 部署),
+  遷移前**先備份**(見下)。部落格/文章需求用現成的 `skills/add-blog/`。
 
 ## 重設管理員密碼
 
